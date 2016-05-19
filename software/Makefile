@@ -114,7 +114,8 @@ CSRC = $(STARTUPSRC) \
        $(CHIBIOS)/os/hal/lib/streams/memstreams.c \
        $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
 			 $(CHIBIOS)/os/various/shell.c \
-			 main.c solarnode_usb.c solarnode_debug.c
+			 main.c solarnode_usb.c solarnode_debug.c solarnode_shell.c\
+			 solarnode_adc.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
@@ -195,7 +196,7 @@ CPPWARN = -Wall -Wextra -Wundef
 #
 
 # List all user C define here, like -D_DEBUG=1
-UDEFS = -D_DEBUG=1
+UDEFS = -D_DEBUG=1 -DCHPRINTF_USE_FLOAT=1
 
 # Define ASM defines here
 UADEFS =

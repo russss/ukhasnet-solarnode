@@ -278,8 +278,8 @@
                                      PIN_OSPEED_HIGH(GPIOA_SWDIO) |         \
                                      PIN_OSPEED_HIGH(GPIOA_SWCLK) |         \
                                      PIN_OSPEED_HIGH(GPIOA_VCP_RX))
-#define VAL_GPIOA_PUPDR             (PIN_PUPDR_PULLUP(GPIOA_ARD_A0) |       \
-                                     PIN_PUPDR_PULLUP(GPIOA_ARD_A1) |       \
+#define VAL_GPIOA_PUPDR             (PIN_PUPDR_FLOATING(GPIOA_ARD_A0) |       \
+                                     PIN_PUPDR_FLOATING(GPIOA_ARD_A1) |       \
                                      PIN_PUPDR_FLOATING(GPIOA_VCP_TX) |     \
                                      PIN_PUPDR_PULLUP(GPIOA_ARD_A2) |       \
                                      PIN_PUPDR_PULLUP(GPIOA_ARD_A3) |       \
