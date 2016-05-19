@@ -60,6 +60,8 @@ static void cmd_test(BaseSequentialStream *chp, int argc, char *argv[]) {
     chprintf(chp, "Icharge:              %.3fA\n", values.charge_current);
     chprintf(chp, "Tsen:                 %.2f\n", values.internal_temp);
     chprintf(chp, "Vdda:                 %.3fV\n", values.vdda_voltage);
+    chprintf(chp, "---------------------------\n");
+    chprintf(chp, "Charging: %i, OK: %i\n", palReadPad(GPIOF, 0), palReadPad(GPIOF, 1));
 }
 
 static const ShellCommand commands[] = {
