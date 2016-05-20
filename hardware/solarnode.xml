@@ -2,14 +2,14 @@
 <export version="D">
   <design>
     <source>/Users/russ/ukhasnet/solarnode/hardware/solarnode.sch</source>
-    <date>Sunday, 17 April 2016 'pmt' 16:22:38</date>
+    <date>Friday, 20 May 2016 'amt' 08:42:49</date>
     <tool>Eeschema 4.0.2-stable</tool>
     <sheet number="1" name="/" tstamps="/">
       <title_block>
         <title>UKHASnet Solar Node</title>
         <company>Russ Garrett</company>
-        <rev>1</rev>
-        <date>15/04/2016</date>
+        <rev>1.1</rev>
+        <date>20/05/2016</date>
         <source>solarnode.sch</source>
         <comment number="1" value=""/>
         <comment number="2" value=""/>
@@ -180,20 +180,6 @@
       <sheetpath names="/" tstamps="/"/>
       <tstamp>5710E429</tstamp>
     </comp>
-    <comp ref="R1">
-      <value>10k</value>
-      <footprint>Resistors_SMD:R_0805</footprint>
-      <libsource lib="device" part="R"/>
-      <sheetpath names="/" tstamps="/"/>
-      <tstamp>5710EFC9</tstamp>
-    </comp>
-    <comp ref="R2">
-      <value>10k</value>
-      <footprint>Resistors_SMD:R_0805</footprint>
-      <libsource lib="device" part="R"/>
-      <sheetpath names="/" tstamps="/"/>
-      <tstamp>5710F032</tstamp>
-    </comp>
     <comp ref="JP1">
       <value>Boot</value>
       <footprint>Resistors_SMD:R_0805</footprint>
@@ -222,13 +208,6 @@
       <sheetpath names="/" tstamps="/"/>
       <tstamp>571100A4</tstamp>
     </comp>
-    <comp ref="U2">
-      <value>CN3083</value>
-      <footprint>agg:SOIC-8-EP-CN</footprint>
-      <libsource lib="cn3083" part="CN3083"/>
-      <sheetpath names="/" tstamps="/"/>
-      <tstamp>57110BE8</tstamp>
-    </comp>
     <comp ref="C6">
       <value>4.7u</value>
       <footprint>Capacitors_SMD:C_0805</footprint>
@@ -246,6 +225,13 @@
       <libsource lib="agg-kicad" part="STM32F0xxFxPx"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamp>57115539</tstamp>
+    </comp>
+    <comp ref="U2">
+      <value>CN3083</value>
+      <footprint>agg:SOIC-8-EP-CN</footprint>
+      <libsource lib="cn3083" part="CN3083"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamp>57110BE8</tstamp>
     </comp>
   </components>
   <libparts>
@@ -512,213 +498,209 @@
     </libpart>
   </libparts>
   <libraries>
-    <library logical="conn">
-      <uri>/Users/russ/kicad_sources/library-repos/kicad-library/library/conn.lib</uri>
-    </library>
     <library logical="device">
       <uri>/Users/russ/kicad_sources/library-repos/kicad-library/library/device.lib</uri>
     </library>
-    <library logical="Tag-Connect">
-      <uri>/Users/russ/kicad/libraries/Tag-Connect.lib</uri>
+    <library logical="conn">
+      <uri>/Users/russ/kicad_sources/library-repos/kicad-library/library/conn.lib</uri>
     </library>
     <library logical="tinkerforge">
       <uri>/Users/russ/kicad/libraries/tinkerforge.pretty/tinkerforge.lib</uri>
     </library>
+    <library logical="Tag-Connect">
+      <uri>/Users/russ/kicad/libraries/Tag-Connect.lib</uri>
+    </library>
     <library logical="mcp1700">
       <uri>/Users/russ/kicad/libraries/mcp1700.lib</uri>
-    </library>
-    <library logical="cn3083">
-      <uri>/Users/russ/kicad/libraries/cn3083.lib</uri>
-    </library>
-    <library logical="agg-kicad">
-      <uri>/Users/russ/kicad/libraries/agg-kicad/agg-kicad.lib</uri>
     </library>
     <library logical="maxim">
       <uri>/Users/russ/kicad_sources/library-repos/kicad-library/library/maxim.lib</uri>
     </library>
+    <library logical="agg-kicad">
+      <uri>/Users/russ/kicad/libraries/agg-kicad/agg-kicad.lib</uri>
+    </library>
+    <library logical="cn3083">
+      <uri>/Users/russ/kicad/libraries/cn3083.lib</uri>
+    </library>
   </libraries>
   <nets>
     <net code="1" name="GND">
-      <node ref="U2" pin="3"/>
-      <node ref="U2" pin="1"/>
-      <node ref="P3" pin="2"/>
-      <node ref="P1" pin="6"/>
-      <node ref="P1" pin="5"/>
-      <node ref="ANT1" pin="5"/>
-      <node ref="C6" pin="2"/>
       <node ref="IC1" pin="15"/>
-      <node ref="U6" pin="1"/>
-      <node ref="U5" pin="1"/>
-      <node ref="D1" pin="1"/>
-      <node ref="JP1" pin="1"/>
-      <node ref="C5" pin="2"/>
-      <node ref="R3" pin="2"/>
-      <node ref="R9" pin="2"/>
-      <node ref="D2" pin="2"/>
-      <node ref="P4" pin="2"/>
+      <node ref="R7" pin="2"/>
       <node ref="P2" pin="5"/>
-      <node ref="ANT1" pin="4"/>
+      <node ref="C6" pin="2"/>
       <node ref="ANT1" pin="3"/>
       <node ref="ANT1" pin="2"/>
       <node ref="U4" pin="8"/>
       <node ref="U4" pin="6"/>
-      <node ref="C4" pin="1"/>
-      <node ref="C7" pin="2"/>
+      <node ref="R3" pin="2"/>
       <node ref="C8" pin="2"/>
-      <node ref="C2" pin="2"/>
       <node ref="U3" pin="1"/>
+      <node ref="U2" pin="1"/>
+      <node ref="U2" pin="3"/>
+      <node ref="P1" pin="6"/>
+      <node ref="P1" pin="5"/>
+      <node ref="ANT1" pin="5"/>
+      <node ref="ANT1" pin="4"/>
+      <node ref="D2" pin="2"/>
+      <node ref="P4" pin="2"/>
+      <node ref="P3" pin="2"/>
+      <node ref="JP1" pin="1"/>
+      <node ref="U6" pin="1"/>
+      <node ref="D1" pin="1"/>
+      <node ref="U5" pin="1"/>
+      <node ref="R9" pin="2"/>
+      <node ref="C2" pin="2"/>
       <node ref="C3" pin="2"/>
       <node ref="C1" pin="2"/>
-      <node ref="R2" pin="2"/>
-      <node ref="R1" pin="1"/>
-      <node ref="R7" pin="2"/>
+      <node ref="C4" pin="1"/>
+      <node ref="C5" pin="2"/>
+      <node ref="C7" pin="2"/>
     </net>
-    <net code="2" name="BATT_OK">
-      <node ref="U2" pin="6"/>
-      <node ref="IC1" pin="3"/>
-      <node ref="R2" pin="1"/>
-    </net>
-    <net code="3" name="BATT_CHARGE">
-      <node ref="R1" pin="2"/>
-      <node ref="U2" pin="7"/>
-      <node ref="IC1" pin="2"/>
-    </net>
-    <net code="4" name="VCC">
-      <node ref="IC1" pin="5"/>
-      <node ref="U3" pin="2"/>
-      <node ref="C2" pin="1"/>
-      <node ref="P2" pin="1"/>
-      <node ref="C7" pin="1"/>
-      <node ref="C8" pin="1"/>
-      <node ref="IC1" pin="16"/>
-      <node ref="C1" pin="1"/>
-      <node ref="R10" pin="1"/>
-      <node ref="U6" pin="3"/>
-      <node ref="C3" pin="1"/>
-      <node ref="U5" pin="3"/>
-      <node ref="U4" pin="16"/>
-    </net>
-    <net code="5" name="+BATT">
-      <node ref="R4" pin="1"/>
-      <node ref="C6" pin="1"/>
-      <node ref="P4" pin="1"/>
-      <node ref="R6" pin="1"/>
-      <node ref="U3" pin="3"/>
-      <node ref="U2" pin="5"/>
-    </net>
-    <net code="6" name="Net-(R4-Pad2)">
-      <node ref="U2" pin="8"/>
-      <node ref="R4" pin="2"/>
-    </net>
-    <net code="7" name="Net-(U4-Pad10)">
-      <node ref="U4" pin="10"/>
-    </net>
-    <net code="8" name="Net-(U4-Pad14)">
-      <node ref="U4" pin="14"/>
-    </net>
-    <net code="9" name="Net-(IC1-Pad18)">
-      <node ref="IC1" pin="18"/>
-      <node ref="P1" pin="3"/>
-    </net>
-    <net code="10" name="Vbattmon">
-      <node ref="R6" pin="2"/>
-      <node ref="IC1" pin="14"/>
-      <node ref="R7" pin="1"/>
-    </net>
-    <net code="11" name="Net-(IC1-Pad13)">
-      <node ref="IC1" pin="13"/>
-      <node ref="U4" pin="9"/>
-    </net>
-    <net code="12" name="SWCLK">
-      <node ref="IC1" pin="20"/>
-      <node ref="P2" pin="4"/>
-    </net>
-    <net code="13" name="Icharge">
-      <node ref="IC1" pin="7"/>
-      <node ref="R5" pin="2"/>
-      <node ref="C5" pin="1"/>
-    </net>
-    <net code="14" name="Vsuppmon">
-      <node ref="R8" pin="2"/>
-      <node ref="R9" pin="1"/>
-      <node ref="IC1" pin="6"/>
-    </net>
-    <net code="15" name="ONEWIRE">
-      <node ref="R10" pin="2"/>
-      <node ref="IC1" pin="8"/>
-      <node ref="U5" pin="2"/>
-      <node ref="U6" pin="2"/>
-    </net>
-    <net code="16" name="Net-(D1-Pad2)">
+    <net code="2" name="Net-(D1-Pad2)">
       <node ref="IC1" pin="1"/>
       <node ref="D1" pin="2"/>
       <node ref="JP1" pin="2"/>
     </net>
-    <net code="17" name="Net-(R3-Pad1)">
-      <node ref="U2" pin="2"/>
+    <net code="3" name="BATT_OK">
+      <node ref="U2" pin="6"/>
+      <node ref="IC1" pin="3"/>
+    </net>
+    <net code="4" name="BATT_CHARGE">
+      <node ref="U2" pin="7"/>
+      <node ref="IC1" pin="2"/>
+    </net>
+    <net code="5" name="VCC">
+      <node ref="U4" pin="16"/>
+      <node ref="P2" pin="1"/>
+      <node ref="C7" pin="1"/>
+      <node ref="IC1" pin="5"/>
+      <node ref="U3" pin="2"/>
+      <node ref="C8" pin="1"/>
+      <node ref="R10" pin="1"/>
+      <node ref="IC1" pin="16"/>
+      <node ref="U5" pin="3"/>
+      <node ref="U6" pin="3"/>
+      <node ref="C1" pin="1"/>
+      <node ref="C2" pin="1"/>
+      <node ref="C3" pin="1"/>
+    </net>
+    <net code="6" name="+BATT">
+      <node ref="P4" pin="1"/>
+      <node ref="U3" pin="3"/>
+      <node ref="R6" pin="1"/>
+      <node ref="R4" pin="1"/>
+      <node ref="U2" pin="5"/>
+      <node ref="C6" pin="1"/>
+    </net>
+    <net code="7" name="Net-(IC1-Pad18)">
+      <node ref="IC1" pin="18"/>
+      <node ref="P1" pin="3"/>
+    </net>
+    <net code="8" name="Net-(IC1-Pad17)">
+      <node ref="IC1" pin="17"/>
+      <node ref="P1" pin="2"/>
+    </net>
+    <net code="9" name="Vbattmon">
+      <node ref="IC1" pin="14"/>
+      <node ref="R6" pin="2"/>
+      <node ref="R7" pin="1"/>
+    </net>
+    <net code="10" name="SWCLK">
+      <node ref="IC1" pin="20"/>
+      <node ref="P2" pin="4"/>
+    </net>
+    <net code="11" name="RFM_RST">
+      <node ref="U4" pin="9"/>
+      <node ref="IC1" pin="9"/>
+    </net>
+    <net code="12" name="Icharge">
+      <node ref="IC1" pin="7"/>
+      <node ref="R5" pin="2"/>
+      <node ref="C5" pin="1"/>
+    </net>
+    <net code="13" name="Vsuppmon">
+      <node ref="IC1" pin="6"/>
+      <node ref="R8" pin="2"/>
+      <node ref="R9" pin="1"/>
+    </net>
+    <net code="14" name="Net-(R4-Pad2)">
+      <node ref="U2" pin="8"/>
+      <node ref="R4" pin="2"/>
+    </net>
+    <net code="15" name="Net-(R3-Pad1)">
       <node ref="R3" pin="1"/>
+      <node ref="U2" pin="2"/>
       <node ref="R5" pin="1"/>
     </net>
-    <net code="18" name="Net-(P1-Pad4)">
+    <net code="16" name="ONEWIRE">
+      <node ref="U5" pin="2"/>
+      <node ref="IC1" pin="8"/>
+      <node ref="U6" pin="2"/>
+      <node ref="R10" pin="2"/>
+    </net>
+    <net code="17" name="Net-(U4-Pad10)">
+      <node ref="U4" pin="10"/>
+    </net>
+    <net code="18" name="Net-(U4-Pad14)">
+      <node ref="U4" pin="14"/>
+    </net>
+    <net code="19" name="Net-(P1-Pad4)">
       <node ref="P1" pin="4"/>
     </net>
-    <net code="19" name="Net-(IC1-Pad17)">
-      <node ref="P1" pin="2"/>
-      <node ref="IC1" pin="17"/>
-    </net>
-    <net code="20" name="Net-(U4-Pad1)">
-      <node ref="U4" pin="1"/>
-    </net>
-    <net code="21" name="Net-(U4-Pad11)">
-      <node ref="U4" pin="11"/>
-    </net>
-    <net code="22" name="Net-(U4-Pad12)">
+    <net code="20" name="Net-(U4-Pad12)">
       <node ref="U4" pin="12"/>
     </net>
-    <net code="23" name="Net-(U4-Pad13)">
+    <net code="21" name="Net-(U4-Pad13)">
       <node ref="U4" pin="13"/>
     </net>
-    <net code="24" name="Net-(U4-Pad15)">
+    <net code="22" name="Net-(U4-Pad15)">
       <node ref="U4" pin="15"/>
     </net>
-    <net code="25" name="Net-(P2-Pad6)">
+    <net code="23" name="Net-(P2-Pad6)">
       <node ref="P2" pin="6"/>
     </net>
+    <net code="24" name="Net-(IC1-Pad12)">
+      <node ref="IC1" pin="12"/>
+      <node ref="U4" pin="4"/>
+    </net>
+    <net code="25" name="Net-(IC1-Pad13)">
+      <node ref="U4" pin="3"/>
+      <node ref="IC1" pin="13"/>
+    </net>
     <net code="26" name="Net-(IC1-Pad10)">
-      <node ref="U4" pin="5"/>
+      <node ref="U4" pin="2"/>
       <node ref="IC1" pin="10"/>
     </net>
-    <net code="27" name="Net-(IC1-Pad11)">
-      <node ref="U4" pin="4"/>
-      <node ref="IC1" pin="11"/>
+    <net code="27" name="Net-(U4-Pad1)">
+      <node ref="U4" pin="1"/>
     </net>
-    <net code="28" name="Net-(IC1-Pad12)">
-      <node ref="IC1" pin="12"/>
-      <node ref="U4" pin="3"/>
-    </net>
-    <net code="29" name="Net-(IC1-Pad9)">
-      <node ref="IC1" pin="9"/>
-      <node ref="U4" pin="2"/>
-    </net>
-    <net code="30" name="NRST">
+    <net code="28" name="NRST">
       <node ref="P2" pin="3"/>
       <node ref="IC1" pin="4"/>
     </net>
-    <net code="31" name="SWDIO">
-      <node ref="P2" pin="2"/>
+    <net code="29" name="SWDIO">
       <node ref="IC1" pin="19"/>
+      <node ref="P2" pin="2"/>
     </net>
-    <net code="32" name="Net-(ANT1-Pad1)">
-      <node ref="U4" pin="7"/>
+    <net code="30" name="Net-(U4-Pad11)">
+      <node ref="U4" pin="11"/>
+    </net>
+    <net code="31" name="Net-(ANT1-Pad1)">
       <node ref="ANT1" pin="1"/>
+      <node ref="U4" pin="7"/>
+    </net>
+    <net code="32" name="Net-(IC1-Pad11)">
+      <node ref="IC1" pin="11"/>
+      <node ref="U4" pin="5"/>
     </net>
     <net code="33" name="Vsupp">
-      <node ref="C4" pin="2"/>
       <node ref="R8" pin="1"/>
-      <node ref="U2" pin="4"/>
       <node ref="P3" pin="1"/>
-      <node ref="P1" pin="1"/>
       <node ref="D2" pin="1"/>
+      <node ref="U2" pin="4"/>
+      <node ref="P1" pin="1"/>
+      <node ref="C4" pin="2"/>
     </net>
   </nets>
 </export>
