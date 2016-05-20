@@ -3,6 +3,8 @@
 A [ukhasnet node](https://ukhas.net) implementation designed for use as
 a remote, solar/lithium battery-powered repeater.
 
+![PCB layout](images/pcb_diag.png)
+
 ## Features
 
 * STM32 ARM micoprocessor
