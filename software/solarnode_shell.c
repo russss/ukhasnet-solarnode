@@ -1,12 +1,14 @@
 #include <string.h>
-
+#define double float
 #include "ch.h"
 #include "hal.h"
 #include "chprintf.h"
 #include "shell.h"
 
 #include "solarnode_shell.h"
+#include "solarnode_config.h"
 #include "solarnode_adc.h"
+#include "solarnode_onewire.h"
 #include "solarnode_usb.h"
 
 #define SHELL_WA_SIZE   THD_WORKING_AREA_SIZE(1024)
@@ -61,12 +63,27 @@ static void cmd_test(BaseSequentialStream *chp, int argc, char *argv[]) {
     chprintf(chp, "Vdda:                 %.3fV\n", values.vdda_voltage);
     chprintf(chp, "---------------------------\n");
     chprintf(chp, "Charging: %i, OK: %i\n", !palReadPad(GPIOF, 0), !palReadPad(GPIOF, 1));
+    oneWireTempRead();
+    chprintf(chp, "OW: %i\n", palReadPad(GPIOA, 2));
 }
+
+static void cmd_config(BaseSequentialStream *chp, int argc, char *argv[]) {
+    if (argc == 2) {
+        if (strcmp(argv[0], "name") == 0) {
+            strcpy(node_config.name, argv[1]);
+        }
+
+        ConfigSave();
+    }
+    chprintf(chp, "Name:                 %s\n",  node_config.name);
+}
+
 
 static const ShellCommand commands[] = {
     {"mem", cmd_mem},
     {"threads", cmd_threads},
     {"test", cmd_test},
+    {"config", cmd_config},
     {NULL, NULL}
 };
 
