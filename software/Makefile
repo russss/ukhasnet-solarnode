@@ -98,7 +98,7 @@ BOARDSRC = $(CURDIR)/board/board.c
 BOARDINC = $(CURDIR)/board/
 
 # Define linker script file here
-LDSCRIPT= $(STARTUPLD)/STM32F042x6.ld
+LDSCRIPT= $(CURDIR)/board/STM32F042x6.ld
 
 # C sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
@@ -115,7 +115,7 @@ CSRC = $(STARTUPSRC) \
        $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
 			 $(CHIBIOS)/os/various/shell.c \
 			 main.c solarnode_usb.c solarnode_debug.c solarnode_shell.c\
-			 solarnode_adc.c
+			 solarnode_adc.c solarnode_config.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
