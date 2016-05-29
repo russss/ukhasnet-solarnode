@@ -82,11 +82,12 @@ PROJECT = solarnode
 
 # Imported source files and paths
 CHIBIOS = ../chibios
+CHIBIOS_CONTRIB = $(CHIBIOS)/community
 # Startup files.
 include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/startup_stm32f0xx.mk
 # HAL-OSAL files (optional).
-include $(CHIBIOS)/os/hal/hal.mk
-include $(CHIBIOS)/os/hal/ports/STM32/STM32F0xx/platform.mk
+include $(CHIBIOS_CONTRIB)/os/hal/hal.mk
+include $(CHIBIOS_CONTRIB)/os/hal/ports/STM32/STM32F0xx/platform.mk
 include $(CHIBIOS)/os/hal/osal/rt/osal.mk
 # RTOS files (optional).
 include $(CHIBIOS)/os/rt/rt.mk
@@ -115,7 +116,7 @@ CSRC = $(STARTUPSRC) \
        $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
 			 $(CHIBIOS)/os/various/shell.c \
 			 main.c solarnode_usb.c solarnode_debug.c solarnode_shell.c\
-			 solarnode_adc.c solarnode_config.c
+			 solarnode_adc.c solarnode_onewire.c solarnode_config.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.

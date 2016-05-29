@@ -48,7 +48,7 @@
  */
 #define GPIOA_ARD_A0                0U
 #define GPIOA_ARD_A1                1U
-#define GPIOA_VCP_TX                2U
+#define GPIOA_PIN2                  2U
 #define GPIOA_ARD_A2                3U
 #define GPIOA_ARD_A3                4U
 #define GPIOA_ARD_A4                5U
@@ -156,7 +156,7 @@
  */
 #define LINE_ARD_A0                 PAL_LINE(GPIOA, 0U)
 #define LINE_ARD_A1                 PAL_LINE(GPIOA, 1U)
-#define LINE_VCP_TX                 PAL_LINE(GPIOA, 2U)
+#define LINE_ONEWIRE                PAL_LINE(GPIOA, 2U)
 #define LINE_ARD_A2                 PAL_LINE(GPIOA, 3U)
 #define LINE_ARD_A3                 PAL_LINE(GPIOA, 4U)
 #define LINE_ARD_A4                 PAL_LINE(GPIOA, 5U)
@@ -215,7 +215,7 @@
  *
  * PA0  - ARD_A0                    (input pullup).
  * PA1  - ARD_A1                    (input pullup).
- * PA2  - VCP_TX                    (alternate 1).
+ * PA2  - ONEWIRE                   (alternate 1).
  * PA3  - ARD_A2                    (input pullup).
  * PA4  - ARD_A3                    (input pullup).
  * PA5  - ARD_A4                    (input pullup).
@@ -232,7 +232,7 @@
  */
 #define VAL_GPIOA_MODER             (PIN_MODE_INPUT(GPIOA_ARD_A0) |         \
                                      PIN_MODE_INPUT(GPIOA_ARD_A1) |         \
-                                     PIN_MODE_ALTERNATE(GPIOA_VCP_TX) |     \
+                                     PIN_MODE_ALTERNATE(GPIOA_PIN2) |     \
                                      PIN_MODE_INPUT(GPIOA_ARD_A2) |         \
                                      PIN_MODE_INPUT(GPIOA_ARD_A3) |         \
                                      PIN_MODE_INPUT(GPIOA_ARD_A4) |         \
@@ -248,7 +248,7 @@
                                      PIN_MODE_ALTERNATE(GPIOA_VCP_RX))
 #define VAL_GPIOA_OTYPER            (PIN_OTYPE_PUSHPULL(GPIOA_ARD_A0) |     \
                                      PIN_OTYPE_PUSHPULL(GPIOA_ARD_A1) |     \
-                                     PIN_OTYPE_PUSHPULL(GPIOA_VCP_TX) |     \
+                                     PIN_OTYPE_PUSHPULL(GPIOA_PIN2) |     \
                                      PIN_OTYPE_PUSHPULL(GPIOA_ARD_A2) |     \
                                      PIN_OTYPE_PUSHPULL(GPIOA_ARD_A3) |     \
                                      PIN_OTYPE_PUSHPULL(GPIOA_ARD_A4) |     \
@@ -264,7 +264,7 @@
                                      PIN_OTYPE_PUSHPULL(GPIOA_VCP_RX))
 #define VAL_GPIOA_OSPEEDR           (PIN_OSPEED_HIGH(GPIOA_ARD_A0) |        \
                                      PIN_OSPEED_HIGH(GPIOA_ARD_A1) |        \
-                                     PIN_OSPEED_LOW(GPIOA_VCP_TX) |         \
+                                     PIN_OSPEED_LOW(GPIOA_PIN2) |         \
                                      PIN_OSPEED_LOW(GPIOA_ARD_A2) |         \
                                      PIN_OSPEED_HIGH(GPIOA_ARD_A3) |        \
                                      PIN_OSPEED_LOW(GPIOA_ARD_A4) |         \
@@ -280,7 +280,7 @@
                                      PIN_OSPEED_HIGH(GPIOA_VCP_RX))
 #define VAL_GPIOA_PUPDR             (PIN_PUPDR_FLOATING(GPIOA_ARD_A0) |       \
                                      PIN_PUPDR_FLOATING(GPIOA_ARD_A1) |       \
-                                     PIN_PUPDR_FLOATING(GPIOA_VCP_TX) |     \
+                                     PIN_PUPDR_FLOATING(GPIOA_PIN2) |     \
                                      PIN_PUPDR_PULLUP(GPIOA_ARD_A2) |       \
                                      PIN_PUPDR_PULLUP(GPIOA_ARD_A3) |       \
                                      PIN_PUPDR_PULLUP(GPIOA_ARD_A4) |       \
@@ -296,7 +296,7 @@
                                      PIN_PUPDR_FLOATING(GPIOA_VCP_RX))
 #define VAL_GPIOA_ODR               (PIN_ODR_HIGH(GPIOA_ARD_A0) |           \
                                      PIN_ODR_HIGH(GPIOA_ARD_A1) |           \
-                                     PIN_ODR_HIGH(GPIOA_VCP_TX) |           \
+                                     PIN_ODR_HIGH(GPIOA_PIN2) |           \
                                      PIN_ODR_HIGH(GPIOA_ARD_A2) |           \
                                      PIN_ODR_HIGH(GPIOA_ARD_A3) |           \
                                      PIN_ODR_LOW(GPIOA_ARD_A4) |            \
@@ -312,7 +312,7 @@
                                      PIN_ODR_HIGH(GPIOA_VCP_RX))
 #define VAL_GPIOA_AFRL              (PIN_AFIO_AF(GPIOA_ARD_A0, 0) |         \
                                      PIN_AFIO_AF(GPIOA_ARD_A1, 0) |         \
-                                     PIN_AFIO_AF(GPIOA_VCP_TX, 1) |         \
+                                     PIN_AFIO_AF(GPIOA_PIN2, 0) |         \
                                      PIN_AFIO_AF(GPIOA_ARD_A2, 0) |         \
                                      PIN_AFIO_AF(GPIOA_ARD_A3, 0) |         \
                                      PIN_AFIO_AF(GPIOA_ARD_A4, 0) |         \

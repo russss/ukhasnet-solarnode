@@ -1,5 +1,10 @@
 #ifndef __SOLARNODE_HARDWARE_H__
 #define __SOLARNODE_HARDWARE_H__
+#include "ch.h"
+#include "hal.h"
+
+#define ONEWIRE_PORT GPIOA
+#define ONEWIRE_PIN  GPIOA_PIN2
 
 #define RES_R6  4750.0
 #define RES_R7  10000.0

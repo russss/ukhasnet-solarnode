@@ -8,6 +8,8 @@
 #include "solarnode_usb.h"
 #include "solarnode_shell.h"
 #include "solarnode_debug.h"
+#include "solarnode_config.h"
+#include "solarnode_onewire.h"
 
 int main(void) {
 #ifdef _DEBUG
@@ -18,8 +20,10 @@ int main(void) {
 
     SYSCFG->CFGR1 |= SYSCFG_CFGR1_PA11_PA12_RMP;
 
+    ConfigInit();
     USBInit();
     shellInit();
+    oneWireInit();
 
     while (true) {
         checkShell();
