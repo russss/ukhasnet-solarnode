@@ -63,8 +63,7 @@ static void cmd_test(BaseSequentialStream *chp, int argc, char *argv[]) {
     chprintf(chp, "Vdda:                 %.3fV\n", values.vdda_voltage);
     chprintf(chp, "---------------------------\n");
     chprintf(chp, "Charging: %i, OK: %i\n", !palReadPad(GPIOF, 0), !palReadPad(GPIOF, 1));
-    oneWireTempRead();
-    chprintf(chp, "OW: %i\n", palReadPad(GPIOA, 2));
+    chprintf(chp, "OW: %i\n", PAL_LOW == oneWireTempRead());
 }
 
 static void cmd_config(BaseSequentialStream *chp, int argc, char *argv[]) {

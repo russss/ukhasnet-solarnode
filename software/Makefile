@@ -5,7 +5,7 @@
 
 # Compiler options here.
 ifeq ($(USE_OPT),)
-  USE_OPT = -Os -ggdb -fomit-frame-pointer -falign-functions=16
+  USE_OPT = -O1 -ggdb -fomit-frame-pointer -falign-functions=16
 endif
 
 # C specific options here (added to USE_OPT).
@@ -82,12 +82,11 @@ PROJECT = solarnode
 
 # Imported source files and paths
 CHIBIOS = ../chibios
-CHIBIOS_CONTRIB = $(CHIBIOS)/community
 # Startup files.
 include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/startup_stm32f0xx.mk
 # HAL-OSAL files (optional).
-include $(CHIBIOS_CONTRIB)/os/hal/hal.mk
-include $(CHIBIOS_CONTRIB)/os/hal/ports/STM32/STM32F0xx/platform.mk
+include $(CHIBIOS)/os/hal/hal.mk
+include $(CHIBIOS)/os/hal/ports/STM32/STM32F0xx/platform.mk
 include $(CHIBIOS)/os/hal/osal/rt/osal.mk
 # RTOS files (optional).
 include $(CHIBIOS)/os/rt/rt.mk
@@ -115,7 +114,8 @@ CSRC = $(STARTUPSRC) \
        $(CHIBIOS)/os/hal/lib/streams/memstreams.c \
        $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
 			 $(CHIBIOS)/os/various/shell.c \
-			 main.c solarnode_usb.c solarnode_debug.c solarnode_shell.c\
+			 ./onewire/onewire.c \
+			 main.c solarnode_usb.c solarnode_debug.c solarnode_shell.c \
 			 solarnode_adc.c solarnode_onewire.c solarnode_config.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
@@ -203,7 +203,7 @@ UDEFS = -DCHPRINTF_USE_FLOAT=1
 UADEFS =
 
 # List all user directories here
-UINCDIR =
+UINCDIR = -I ./onewire
 
 # List the user directory to look for the libraries here
 ULIBDIR =

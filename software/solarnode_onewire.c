@@ -1,7 +1,7 @@
 #include <string.h>
 #include "ch.h"
 #include "hal.h"
-#include "hal_community.h"
+#include "onewire.h"
 #include "solarnode_onewire.h"
 #include "solarnode_hardware.h"
 
@@ -52,8 +52,7 @@ char oneWireTempRead() {
     size_t devices_on_bus = 0;
 
     onewireStart(&OWD1, &ow_cfg);
-    /*
-    while(onewireReset(&OWD1) == FALSE) {
+    while(onewireReset(&OWD1) == false) {
         chThdSleepMilliseconds(1);
     }
     memset(rombuf, 0x55, sizeof(rombuf));
@@ -66,7 +65,6 @@ char oneWireTempRead() {
         osalDbgCheck(0 == memcmp(rombuf, testbuf, 8));
     }
     onewireStop(&OWD1);
-    */
     return temp;
 }
 

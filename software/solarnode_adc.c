@@ -21,7 +21,7 @@
 
 static adcsample_t samples[ADC_NUM_CHANNELS];
 
-static ADCConfig adccfg = {};
+static ADCConfig adccfg = {0};
 static ADCConversionGroup adcgrpcfg = {
       FALSE,
       ADC_NUM_CHANNELS,
