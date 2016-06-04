@@ -1,5 +1,4 @@
 #include <string.h>
-#define double float
 #include "ch.h"
 #include "hal.h"
 #include "chprintf.h"
@@ -41,8 +40,8 @@ static void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[]) {
     chprintf(chp, "    addr    stack prio refs     state\r\n");
     tp = chRegFirstThread();
     do {
-      chprintf(chp, "%08lx %08lx %4lu %4lu %9s %lu\r\n",
-               (uint32_t)tp, (uint32_t)tp->p_ctx.r13,
+      chprintf(chp, "%10s %08lx %08lx %4lu %4lu %9s %lu\r\n",
+               tp->p_name, (uint32_t)tp, (uint32_t)tp->p_ctx.r13,
                (uint32_t)tp->p_prio, (uint32_t)(tp->p_refs - 1),
                states[tp->p_state]);
       tp = chRegNextThread(tp);
@@ -63,7 +62,6 @@ static void cmd_test(BaseSequentialStream *chp, int argc, char *argv[]) {
     chprintf(chp, "Vdda:                 %.3fV\n", values.vdda_voltage);
     chprintf(chp, "---------------------------\n");
     chprintf(chp, "Charging: %i, OK: %i\n", !palReadPad(GPIOF, 0), !palReadPad(GPIOF, 1));
-    chprintf(chp, "OW: %i\n", PAL_LOW == oneWireTempRead());
 }
 
 static void cmd_config(BaseSequentialStream *chp, int argc, char *argv[]) {
