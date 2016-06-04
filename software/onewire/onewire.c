@@ -59,6 +59,9 @@ on every timer overflow event.
 
 #include <string.h>
 
+#define OW_LOW (uint_fast8_t)PAL_LOW
+#define OW_HIGH (uint_fast8_t)PAL_HIGH
+
 /*===========================================================================*/
 /* Driver local definitions.                                                 */
 /*===========================================================================*/
@@ -249,7 +252,7 @@ static void ow_write_bit_I(onewireDriver *owp, uint_fast8_t bit) {
  */
 static void ow_reset_cb(PWMDriver *pwmp, onewireDriver *owp) {
 
-  owp->reg.slave_present = (PAL_LOW == ow_read_bit(owp));
+  owp->reg.slave_present = (OW_LOW == ow_read_bit(owp));
 
   osalSysLockFromISR();
   pwmDisableChannelI(pwmp, owp->config->sample_channel);
@@ -647,7 +650,7 @@ bool onewireReset(onewireDriver *owp) {
   osalDbgAssert(owp->reg.state == ONEWIRE_READY, "Invalid state");
 
   /* short circuit on bus or any other device transmit data */
-  if ((uint_fast8_t)PAL_LOW == ow_read_bit(owp))
+  if (OW_LOW == ow_read_bit(owp))
     return false;
 
   pwmd = owp->config->pwmd;
@@ -676,7 +679,7 @@ bool onewireReset(onewireDriver *owp) {
 
   /* wait until slave release bus to discriminate short circuit condition */
   osalThreadSleepMicroseconds(500);
-  return (PAL_HIGH == ow_read_bit(owp)) && (true == owp->reg.slave_present);
+  return (OW_HIGH == ow_read_bit(owp)) && (true == owp->reg.slave_present);
 }
 
 /**

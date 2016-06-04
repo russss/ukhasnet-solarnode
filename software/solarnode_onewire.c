@@ -32,8 +32,8 @@ static const onewireConfig ow_cfg = {
     PWM_OUTPUT_ACTIVE_LOW,
     ONEWIRE_MASTER_CHANNEL,
     ONEWIRE_SAMPLE_CHANNEL,
-    ONEWIRE_PORT,
-    ONEWIRE_PIN,
+    GPIOA,
+    GPIOA_ONEWIRE,
 #if defined(STM32F1XX)
     ONEWIRE_PAD_MODE_IDLE,
 #endif
