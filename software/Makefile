@@ -30,7 +30,7 @@ endif
 
 # Enable this if you want link time optimizations (LTO)
 ifeq ($(USE_LTO),)
-  USE_LTO = yes
+  USE_LTO = no
 endif
 
 # If enabled, this option allows to compile the application in THUMB mode.
@@ -198,7 +198,7 @@ CPPWARN = -Wall -Wextra -Wundef
 #
 
 # List all user C define here, like -D_DEBUG=1
-UDEFS = -DCHPRINTF_USE_FLOAT=1
+UDEFS = -DCHPRINTF_USE_FLOAT=1 -D_DEBUG=1
 
 # Define ASM defines here
 UADEFS =
@@ -210,7 +210,7 @@ UINCDIR = -I ./onewire
 ULIBDIR =
 
 # List all user libraries here
-ULIBS = #--specs=rdimon.specs -lm -lc -lrdimon
+ULIBS = --specs=rdimon.specs -lm -lc -lrdimon
 
 #
 # End of user defines
