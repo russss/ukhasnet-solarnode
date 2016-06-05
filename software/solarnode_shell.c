@@ -9,9 +9,9 @@
 #include "solarnode_adc.h"
 #include "solarnode_onewire.h"
 #include "solarnode_usb.h"
+#include "solarnode_rfm69.h"
 
-#define SHELL_WA_SIZE   THD_WORKING_AREA_SIZE(1024)
-
+static THD_WORKING_AREA(shellWorkingArea, 1024);
 static thread_t *shelltp = NULL;
 
 static void cmd_mem(BaseSequentialStream *chp, int argc, char *argv[]) {
@@ -62,6 +62,7 @@ static void cmd_test(BaseSequentialStream *chp, int argc, char *argv[]) {
     chprintf(chp, "Vdda:                 %.3fV\n", values.vdda_voltage);
     chprintf(chp, "---------------------------\n");
     chprintf(chp, "Charging: %i, OK: %i\n", !palReadPad(GPIOF, 0), !palReadPad(GPIOF, 1));
+    chprintf(chp, "Radio state: %i\n", radio_ok);
 }
 
 static void cmd_config(BaseSequentialStream *chp, int argc, char *argv[]) {
@@ -91,7 +92,7 @@ const ShellConfig shell_cfg = {
 
 void checkShell() {
     if (!shelltp && (SDU1.config->usbp->state == USB_ACTIVE)) {
-        shelltp = shellCreate(&shell_cfg, SHELL_WA_SIZE, NORMALPRIO);
+        shelltp = shellCreateStatic(&shell_cfg, shellWorkingArea, sizeof(shellWorkingArea), NORMALPRIO);
     } else if (chThdTerminatedX(shelltp)) {
         chThdRelease(shelltp);
         shelltp = NULL;
