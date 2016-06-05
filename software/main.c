@@ -24,10 +24,8 @@ int main(void) {
     ConfigInit();
     USBInit();
     shellInit();
-    if (!rfm69Init()) {
-        // TODO: handle RFM69 init failure
-    }
     oneWireInit();
+    rfm69Init();
 
     while (true) {
         checkShell();

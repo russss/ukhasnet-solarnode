@@ -117,7 +117,7 @@ CSRC = $(STARTUPSRC) \
 			 ./onewire/onewire.c \
 			 main.c solarnode_usb.c solarnode_debug.c solarnode_shell.c \
 			 solarnode_adc.c solarnode_onewire.c solarnode_config.c \
-			 solarnode_rfm69.c
+			 solarnode_rfm69.c solarnode_led.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.

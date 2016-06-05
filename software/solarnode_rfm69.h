@@ -1,6 +1,8 @@
 #ifndef __SOLARNODE_RFM69_H__
 #define __SOLARNODE_RFM69_H__
 
-bool rfm69Init(void);
+extern bool radio_ok;
+
+void rfm69Init(void);
 
 #endif
