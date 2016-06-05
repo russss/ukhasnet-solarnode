@@ -12,6 +12,8 @@
 #define MAILBOX_SIZE 4
 
 volatile bool radio_ok = false;
+volatile systime_t radio_last_reset = 0;
+
 static THD_WORKING_AREA(rfmWorkingArea, 512);
 
 MEMORYPOOL_DECL(rfm69_mp, MAILBOX_SIZE * MAX_MESSAGE, NULL);
@@ -118,19 +120,16 @@ void radio_loop() {
     intptr_t msgp;
 
     while(true) {
-        /*
         status = chMBFetch(&rfm69_tx_mailbox, (msg_t*)&msgp, TIME_INFINITE);
         if (status != MSG_OK || msgp == 0) {
             chThdSleepMilliseconds(1);
             continue;
-        }*/
-        char test[] = "1a[RUSSTEST]";
-        msgp = &test;
+        }
         if (rfm69_frame_tx(&SPID1, (uint8_t *) msgp, strlen((char *)msgp)) != 0) {
             return;
         }
         chThdSleepMilliseconds(2000);
-        //chPoolFree(&rfm69_mp, (void *)msgp);
+        chPoolFree(&rfm69_mp, (void *)msgp);
     }
 }
 
@@ -140,6 +139,7 @@ static THD_FUNCTION(rfm69_thread, arg) {
     chRegSetThreadName("RFM69");
 
     while(true) {
+        radio_last_reset = chVTGetSystemTime();
         rfm69_reset();
         while (rfm69_register_read(&SPID1, RFM69_VERSION) != 0x24) {
             chThdSleepMilliseconds(100);

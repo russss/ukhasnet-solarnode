@@ -30,6 +30,6 @@ int main(void) {
     while (true) {
         checkShell();
         chThdSleepMilliseconds(1000);
-        rfm69Send("1a[TEST]");
+        rfm69Send("1a[RUSSTEST]");
     }
 }
