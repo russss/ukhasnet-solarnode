@@ -5,7 +5,7 @@
 
 static const uint8_t RFM69_CONFIG[][2] =
 {
-    { RFM69_REG_01_OPMODE,      RF_OPMODE_SEQUENCER_ON | RF_OPMODE_LISTEN_OFF | RFM69_MODE_RX },
+    { RFM69_REG_01_OPMODE,      RF_OPMODE_SEQUENCER_ON | RF_OPMODE_LISTEN_OFF | RFM69_MODE_STDBY },
     { RFM69_REG_02_DATA_MODUL,  RF_DATAMODUL_DATAMODE_PACKET | RF_DATAMODUL_MODULATIONTYPE_FSK | RF_DATAMODUL_MODULATIONSHAPING_00 },
     
     { RFM69_REG_03_BITRATE_MSB, 0x3E}, // 2000 bps
@@ -23,7 +23,7 @@ static const uint8_t RFM69_CONFIG[][2] =
     // PA Settings
     // +20dBm formula: Pout=-11+OutputPower[dBmW] (with PA1 and PA2)** and high power PA settings (section 3.3.7 in datasheet)
     // Without extra flags: Pout=-14+OutputPower[dBmW]
-    { RFM69_REG_11_PA_LEVEL,    RF_PALEVEL_PA0_ON | RF_PALEVEL_PA1_OFF | RF_PALEVEL_PA2_OFF | 0x18},  // 10mW
+    { RFM69_REG_11_PA_LEVEL,    RF_PALEVEL_PA0_ON | RF_PALEVEL_PA1_OFF | RF_PALEVEL_PA2_OFF | 0xff},  // 10mW
     //{ RFM69_REG_11_PA_LEVEL, RF_PALEVEL_PA0_OFF | RF_PALEVEL_PA1_ON | RF_PALEVEL_PA2_ON | 0x1f},// 50mW
     
     { RFM69_REG_12_PA_RAMP, RF_PARAMP_40 },

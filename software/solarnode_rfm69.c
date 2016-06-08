@@ -10,9 +10,11 @@
 
 #define MAX_MESSAGE 64
 #define MAILBOX_SIZE 4
+#define RSSI_SAMPLES 10
 
-volatile bool radio_ok = false;
-volatile systime_t radio_last_reset = 0;
+volatile bool rfm69_ok = false;
+volatile systime_t rfm69_last_reset = 0;
+volatile char rfm69_rssi_threshold = 0;
 
 static THD_WORKING_AREA(rfmWorkingArea, 512);
 
@@ -20,22 +22,20 @@ MEMORYPOOL_DECL(rfm69_mp, MAILBOX_SIZE * MAX_MESSAGE, NULL);
 static volatile msg_t rfm69_tx_mailbox_q[MAILBOX_SIZE];
 MAILBOX_DECL(rfm69_tx_mailbox, rfm69_tx_mailbox_q, MAILBOX_SIZE);
 
-void radio_loop(void);
-
 
 static const SPIConfig spi_cfg = {
     NULL,
     GPIOB,
     12,
     SPI_CR1_BR_2,
-    0
+    SPI_CR2_DS_2 | SPI_CR2_DS_1 | SPI_CR2_DS_0
 };
 
 static void rfm69_reset(void) {
     palWritePad(GPIOA, GPIOA_RFM_RST, 1);
-    chThdSleepMilliseconds(25);
+    chThdSleepMilliseconds(1);
     palWritePad(GPIOA, GPIOA_RFM_RST, 0);
-    chThdSleepMilliseconds(150);
+    chThdSleepMilliseconds(50);
 }
 
 static uint8_t rfm69_spi_transfer_byte(SPIDriver* SPID, uint8_t out) {
@@ -92,11 +92,13 @@ int rfm69_frame_tx(SPIDriver* SPID, uint8_t *buf, int len) {
     rfm69_spi_transfer_byte(SPID, RFM69_FIFO | 0x80);
     // packet length
     rfm69_spi_transfer_byte(SPID, len);
-
+    spiSend(SPID, len, buf);
+/*
     int i;
     for (i = 0; i < len; i++) {
         rfm69_spi_transfer_byte(SPID, buf[i]);
     }
+*/
     spiUnselect(SPID);
 
     // TX packet
@@ -108,28 +110,78 @@ int rfm69_frame_tx(SPIDriver* SPID, uint8_t *buf, int len) {
     return 0;
 }
 
-static void rfm69_config(SPIDriver* SPID) {
+static bool rfm69_config(SPIDriver* SPID) {
     int i;
+    char val;
     for (i = 0; RFM69_CONFIG[i][0] != 255; i++) {
         rfm69_register_write(SPID, RFM69_CONFIG[i][0], RFM69_CONFIG[i][1]);
     }
+    for (i = 0; RFM69_CONFIG[i][0] != 255; i++) {
+        val = rfm69_register_read(SPID, RFM69_CONFIG[i][0]);
+        if (val != RFM69_CONFIG[i][1]) {
+            return false;
+        }
+    }
+    return true;
 }
 
-void radio_loop() {
+static bool calibrate_rssi(SPIDriver* SPID) {
+    char i;
+    int sum = 0;
+
+    rfm69_register_write(SPID, RFM69_RSSITHRESH, 0xff);
+    if (rfm69_wait_for_bit_high(SPID, RFM69_IRQFLAGS1, RFM69_IRQFLAGS1_Rssi) == -1) {
+        return false;
+    }
+
+    for (i = 0; i < RSSI_SAMPLES; i++) {
+        sum += rfm69_register_read(SPID, RFM69_RSSITHRESH);
+        chThdSleepMilliseconds(200);
+    }
+
+    rfm69_rssi_threshold = sum/RSSI_SAMPLES;
+    rfm69_register_write(SPID, RFM69_RSSITHRESH, rfm69_rssi_threshold);
+    return true;
+}
+
+
+void radio_loop(SPIDriver* SPID) {
     msg_t status;
     intptr_t msgp;
+    systime_t last_rssi_calibration = 0;
 
     while(true) {
-        status = chMBFetch(&rfm69_tx_mailbox, (msg_t*)&msgp, TIME_INFINITE);
+        if (last_rssi_calibration == 0 || ST2S(chVTTimeElapsedSinceX(last_rssi_calibration)) > 600) { // TODO: check wraparound
+            if (!calibrate_rssi(SPID)) {
+                return;
+            }
+            last_rssi_calibration = chVTGetSystemTime();
+        }
+
+        /*
+        if (rfm69_wait_for_bit_high(SPID, RFM69_IRQFLAGS2, RFM69_IRQFLAGS2_PayloadReady) == 0) {
+            // Packet ready
+        } else if ((rfm69_register_read(SPID, RFM69_IRQFLAGS1) & RFM69_IRQFLAGS1_Timeout) != 0) {
+            // Receive timeout. Restart the receiver.
+        }
+        */
+        chThdSleepMilliseconds(500);
+        /*
+        status = chMBFetch(&rfm69_tx_mailbox, (msg_t*)&msgp, TIME_IMMEDIATE);
         if (status != MSG_OK || msgp == 0) {
-            chThdSleepMilliseconds(1);
+            // No messages to send, loop around
             continue;
         }
-        if (rfm69_frame_tx(&SPID1, (uint8_t *) msgp, strlen((char *)msgp)) != 0) {
+        */
+        char data[] = "1a[RUSSTEST]";
+        msgp = &data;
+        if (rfm69_frame_tx(SPID, (uint8_t *) msgp, strlen((char *)msgp)) != 0) {
             return;
         }
-        chThdSleepMilliseconds(2000);
-        chPoolFree(&rfm69_mp, (void *)msgp);
+        //chPoolFree(&rfm69_mp, (void *)msgp);
+        if (rfm69_mode(SPID, RFM69_OPMODE_Mode_RX) != 0) {
+            return;
+        }
     }
 }
 
@@ -139,22 +191,23 @@ static THD_FUNCTION(rfm69_thread, arg) {
     chRegSetThreadName("RFM69");
 
     while(true) {
-        radio_last_reset = chVTGetSystemTime();
+        rfm69_last_reset = chVTGetSystemTime();
         rfm69_reset();
         while (rfm69_register_read(&SPID1, RFM69_VERSION) != 0x24) {
-            chThdSleepMilliseconds(100);
+            chThdSleepMilliseconds(250);
             rfm69_reset();
         }
-        rfm69_config(&SPID1);
-        if (rfm69_mode(&SPID1, RFM69_OPMODE_Mode_STDBY) != 0) {
+        if (!rfm69_config(&SPID1)) {
+            continue;
+        }
+        if (rfm69_mode(&SPID1, RFM69_OPMODE_Mode_RX) != 0) {
             continue;
         }
 
-        radio_ok = true;
-        radio_loop();
-        radio_ok = false;
-
-        chThdSleepMilliseconds(500);
+        rfm69_ok = true;
+        radio_loop(&SPID1);
+        rfm69_ok = false;
+        chThdSleepMilliseconds(100);
     }
 }
 

@@ -62,9 +62,13 @@ static void cmd_test(BaseSequentialStream *chp, int argc, char *argv[]) {
     chprintf(chp, "Vdda:                 %.3fV\n", values.vdda_voltage);
     chprintf(chp, "---------------------------\n");
     chprintf(chp, "Charging: %i, OK: %i\n", !palReadPad(GPIOF, 0), !palReadPad(GPIOF, 1));
-    chprintf(chp, "Radio state: %s, last reset %i seconds ago.\n",
-            radio_ok?"OK":"Failed",
-            ST2S(chVTTimeElapsedSinceX(radio_last_reset)));
+    if (rfm69_ok) {
+        chprintf(chp, "Radio OK. RSSI threshold: -%.1f, last reset %i seconds ago.\n",
+                rfm69_rssi_threshold / 2.0,
+                ST2S(chVTTimeElapsedSinceX(rfm69_last_reset)));
+    } else {
+        chprintf(chp, "Radio FAILED.\n");
+    }
 }
 
 static void cmd_config(BaseSequentialStream *chp, int argc, char *argv[]) {
@@ -81,8 +85,8 @@ static void cmd_config(BaseSequentialStream *chp, int argc, char *argv[]) {
 
 static const ShellCommand commands[] = {
     {"mem", cmd_mem},
-    {"threads", cmd_threads},
     {"test", cmd_test},
+    {"threads", cmd_threads},
     {"config", cmd_config},
     {NULL, NULL}
 };

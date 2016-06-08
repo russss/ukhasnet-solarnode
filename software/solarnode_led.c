@@ -23,7 +23,7 @@ static THD_FUNCTION(led_thread, arg) {
     // Wait for the radio to initialise to avoid reporting a false error.
     chThdSleepMilliseconds(2000);
     while(true) {
-        if (radio_ok) {
+        if (rfm69_ok) {
             flashLED(1);
             chThdSleepMilliseconds(5000);
         } else {

@@ -2,9 +2,11 @@
 #define __SOLARNODE_RFM69_H__
 
 // If the radio is currently operating
-extern volatile bool radio_ok;
+extern volatile bool rfm69_ok;
 // Time of the last radio reset
-extern volatile systime_t radio_last_reset;
+extern volatile systime_t rfm69_last_reset;
+// RSSI threshold
+extern volatile char rfm69_rssi_threshold;
 
 void rfm69Init(void);
 void rfm69Send(const char *packet);
