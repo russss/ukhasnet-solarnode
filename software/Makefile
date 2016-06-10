@@ -5,7 +5,7 @@
 
 # Compiler options here.
 ifeq ($(USE_OPT),)
-  USE_OPT = -O1 -ggdb -fomit-frame-pointer -falign-functions=16
+  USE_OPT = -Os -ggdb -fomit-frame-pointer -falign-functions=16
 endif
 
 # C specific options here (added to USE_OPT).
@@ -117,7 +117,7 @@ CSRC = $(STARTUPSRC) \
 			 ./onewire/onewire.c \
 			 main.c solarnode_usb.c solarnode_debug.c solarnode_shell.c \
 			 solarnode_adc.c solarnode_onewire.c solarnode_config.c \
-			 solarnode_rfm69.c solarnode_led.c
+			 solarnode_rfm69.c solarnode_led.c solarnode_ukhasnet.c
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.

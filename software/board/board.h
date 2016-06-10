@@ -225,7 +225,7 @@
                                      PIN_MODE_INPUT(GPIOA_ICHARGE) |         \
                                      PIN_MODE_ALTERNATE(GPIOA_ONEWIRE) |     \
                                      PIN_MODE_OUTPUT(GPIOA_RFM_RST) |         \
-                                     PIN_MODE_ALTERNATE(GPIOA_NSS) |         \
+                                     PIN_MODE_OUTPUT(GPIOA_NSS) |         \
                                      PIN_MODE_ALTERNATE(GPIOA_SCK) |         \
                                      PIN_MODE_ALTERNATE(GPIOA_MISO) |         \
                                      PIN_MODE_ALTERNATE(GPIOA_MOSI) |         \
@@ -289,7 +289,7 @@
                                      PIN_ODR_HIGH(GPIOA_ICHARGE) |           \
                                      PIN_ODR_LOW(GPIOA_ONEWIRE) |           \
                                      PIN_ODR_HIGH(GPIOA_RFM_RST) |           \
-                                     PIN_ODR_LOW(GPIOA_NSS) |           \
+                                     PIN_ODR_HIGH(GPIOA_NSS) |           \
                                      PIN_ODR_LOW(GPIOA_SCK) |            \
                                      PIN_ODR_LOW(GPIOA_MISO) |           \
                                      PIN_ODR_LOW(GPIOA_MOSI) |           \

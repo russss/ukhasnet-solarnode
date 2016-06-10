@@ -3,7 +3,7 @@
 #include <solarnode_led.h>
 #include <solarnode_rfm69.h>
 
-static THD_WORKING_AREA(ledWorkingArea, 64);
+static THD_WORKING_AREA(ledWorkingArea, 32);
 
 static void flashLED(char number) {
     char i;

@@ -12,6 +12,7 @@
 #include "solarnode_rfm69.h"
 #include "solarnode_onewire.h"
 #include "solarnode_led.h"
+#include "solarnode_ukhasnet.h"
 
 int main(void) {
 #ifdef _DEBUG
@@ -26,10 +27,12 @@ int main(void) {
     shellInit();
     oneWireInit();
     rfm69Init();
+    ukhasnetInit();
 
     while (true) {
         checkShell();
         chThdSleepMilliseconds(1000);
-        rfm69Send("1a[RUSSTEST]");
     }
 }
+
+
