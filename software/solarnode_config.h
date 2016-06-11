@@ -10,6 +10,7 @@ typedef struct {
     char repeat_count;
     uint16_t tx_interval;
     uint16_t tx_interval_low;
+    uint16_t low_power_threshold;
 } solarnode_config_t;
 
 extern solarnode_config_t node_config;

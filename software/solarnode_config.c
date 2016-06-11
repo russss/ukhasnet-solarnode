@@ -29,7 +29,8 @@ const solarnode_config_t default_config = {
     "51.54,-0.09",
     1,
     20,
-    40
+    40,
+    3800
 };
 
 void ConfigInit() {

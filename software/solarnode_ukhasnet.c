@@ -7,6 +7,8 @@
 #include "solarnode_adc.h"
 #include "solarnode_rfm69.h"
 
+volatile char node_state = STATE_REPEATER;
+
 static THD_WORKING_AREA(transmitWorkingArea, 256);
 
 static void transmitPacket(const char counter, const adc_values_t values) {
@@ -23,9 +25,10 @@ static void transmitPacket(const char counter, const adc_values_t values) {
     } else {
         // Normal packet
         pos += chsnprintf(((char *)&sendbuf) + pos, MAX_MESSAGE - pos,
-                          "T%.1fV%.1f,%.1f,%.1fI%.2fX%i,%i", values.internal_temp,
+                          "T%.1fV%.1f,%.1f,%.1fI%.2fZ%iX%i,%i", values.internal_temp,
                           values.supply_voltage, values.batt_voltage, values.vdda_voltage,
                           values.charge_current,
+                          node_state == STATE_ZOMBIE,
                           !palReadPad(GPIOF, GPIOF_BATT_CHARGE), !palReadPad(GPIOF, GPIOF_BATT_OK));
     }
 
@@ -38,20 +41,33 @@ static THD_FUNCTION(transmit_thread, arg) {
     char counter = 'a';
     (void)arg;
     chRegSetThreadName("Transmit");
+
     // Wait for the radio to initialise
     while (!rfm69_ok) {
         chThdSleepMilliseconds(10);
     }
+
+    // Transmit initial packet
+    adc_values = readADC();
     transmitPacket(counter, adc_values);
 
     while(true) {
-        chThdSleepSeconds(node_config.tx_interval); // TODO: low-batt mode
+        // Set node state depending on battery voltage
+        if (adc_values.batt_voltage < (node_config.low_power_threshold / 1000.0)) {
+            node_state = STATE_ZOMBIE;
+            chThdSleepSeconds(node_config.tx_interval_low);
+        } else if (adc_values.batt_voltage > (node_config.low_power_threshold / 1000.0 + 0.05)) {
+            node_state = STATE_REPEATER;
+            chThdSleepSeconds(node_config.tx_interval);
+        }
+
         adc_values = readADC();
         if (counter < 'z') {
             counter++;
         } else {
             counter = 'b';
         }
+
         transmitPacket(counter, adc_values);
     }
 }
