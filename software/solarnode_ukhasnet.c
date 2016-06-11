@@ -56,9 +56,13 @@ static THD_FUNCTION(transmit_thread, arg) {
         // Set node state depending on battery voltage
         if (adc_values.batt_voltage < (node_config.low_power_threshold / 1000.0) || node_config.zombie) {
             node_state = STATE_ZOMBIE;
-            chThdSleepSeconds(node_config.tx_interval_low);
         } else if (adc_values.batt_voltage > (node_config.low_power_threshold / 1000.0 + 0.05)) {
             node_state = STATE_REPEATER;
+        }
+
+        if (node_state == STATE_ZOMBIE) {
+            chThdSleepSeconds(node_config.tx_interval_low);
+        } else {
             chThdSleepSeconds(node_config.tx_interval);
         }
 
