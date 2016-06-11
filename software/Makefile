@@ -210,7 +210,7 @@ UINCDIR = -I ./onewire
 ULIBDIR =
 
 # List all user libraries here
-ULIBS = # --specs=rdimon.specs -lm -lc -lrdimon
+ULIBS = --specs=nano.specs # --specs=rdimon.specs -lm -lc -lrdimon
 
 #
 # End of user defines
