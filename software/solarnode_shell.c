@@ -62,7 +62,8 @@ static void cmd_test(BaseSequentialStream *chp, int argc, char *argv[]) {
     chprintf(chp, "Tsen:                 %.2f\n", values.internal_temp);
     chprintf(chp, "Vdda:                 %.3fV\n", values.vdda_voltage);
     chprintf(chp, "---------------------------\n");
-    chprintf(chp, "Charging: %i, OK: %i\n", !palReadPad(GPIOF, 0), !palReadPad(GPIOF, 1));
+    chprintf(chp, "Charging: %i, OK: %i\n", !palReadPad(GPIOF, GPIOF_BATT_CHARGE),
+                                            !palReadPad(GPIOF, GPIOF_BATT_OK));
     if (rfm69_ok) {
         chprintf(chp, "Radio OK. RSSI threshold: -%.1f, last reset %i seconds ago.\n",
                 rfm69_rssi_threshold / 2.0,
@@ -79,24 +80,28 @@ static void cmd_config(BaseSequentialStream *chp, int argc, char *argv[]) {
         }
         if (strcmp(argv[0], "position") == 0) {
             strncpy(node_config.position, argv[1], sizeof(node_config.position));
-        }/*
+        }
+        if (strcmp(argv[0], "repeat_count") == 0) {
+            node_config.repeat_count = atoi(argv[1]);
+        }
         if (strcmp(argv[0], "txinterval") == 0) {
             node_config.tx_interval = atoi(argv[1]);
         }
         if (strcmp(argv[0], "txinterval_low") == 0) {
             node_config.tx_interval_low = atoi(argv[1]);
-        }*/
+        }
         int ret = ConfigSave();
         if (ret != FLASH_OK) {
             chprintf(chp, "Flash write failed with status: %i\n", ret);
         }
     }
-    chprintf(chp, "Node Configuration");
-    chprintf(chp, "------------------");
-    chprintf(chp, "Name:                    %s\n",  node_config.name);
-    chprintf(chp, "Position:                %s\n",  node_config.position);
-    chprintf(chp, "Tx Interval:             %s\n",  node_config.tx_interval);
-    chprintf(chp, "Tx Interval (low batt):  %s\n",  node_config.tx_interval_low);
+    chprintf(chp, "Node Configuration\n");
+    chprintf(chp, "------------------\n");
+    chprintf(chp, "name:                    %s\n",  node_config.name);
+    chprintf(chp, "position:                %s\n",  node_config.position);
+    chprintf(chp, "repeat_count:            %i\n",  node_config.repeat_count);
+    chprintf(chp, "tx_interval:             %i\n",  node_config.tx_interval);
+    chprintf(chp, "tx_interval_low:         %i\n",  node_config.tx_interval_low);
 }
 
 

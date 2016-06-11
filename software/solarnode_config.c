@@ -14,13 +14,20 @@ static int flashErasePage(flashaddr_t page);
 #define flashWaitWhileBusy() { while (FLASH->SR & FLASH_SR_BSY) {} }
 #define flashLock() { FLASH->CR |= FLASH_CR_LOCK; }
 
+// Allocate a flash page to hold user configuration (512 two-byte words = 1kB)
+// The .user_data section is carved out in the linker script.
 __attribute__((__section__(".user_data"))) volatile flashdata_t flash_config[512];
+
 solarnode_config_t node_config;
 
+// Default configuration if there is no user config in flash:
+// This struct is const so gets put in flash rather than RAM
+// TODO: remove testing config and set this to something more sensible
 const solarnode_config_t default_config = {
     CONFIG_MAGIC,
-    "",
-    "",
+    "RUSSTEST",
+    "51.54,-0.09",
+    1,
     20,
     40
 };

@@ -7,6 +7,7 @@ typedef struct {
     char magic;
     char name[16];
     char position[12];
+    char repeat_count;
     uint16_t tx_interval;
     uint16_t tx_interval_low;
 } solarnode_config_t;
