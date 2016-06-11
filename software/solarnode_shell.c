@@ -93,6 +93,9 @@ static void cmd_config(BaseSequentialStream *chp, int argc, char *argv[]) {
         if (strcmp(argv[0], "low_power_threshold") == 0) {
             node_config.low_power_threshold = atoi(argv[1]);
         }
+        if (strcmp(argv[0], "zombie") == 0) {
+            node_config.zombie = (argv[1][0] == '1');
+        }
         int ret = ConfigSave();
         if (ret != FLASH_OK) {
             chprintf(chp, "Flash write failed with status: %i\n", ret);
@@ -106,6 +109,7 @@ static void cmd_config(BaseSequentialStream *chp, int argc, char *argv[]) {
     chprintf(chp, "tx_interval:             %i  seconds\n",  node_config.tx_interval);
     chprintf(chp, "tx_interval_low:         %i  seconds\n",  node_config.tx_interval_low);
     chprintf(chp, "low_power_threshold:     %i  mV\n",  node_config.low_power_threshold);
+    chprintf(chp, "zombie:                  %i\n", node_config.zombie);
 }
 
 

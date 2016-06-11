@@ -4,7 +4,7 @@
 #include "ch.h"
 #include "hal.h"
 #include "solarnode_rfm69.h"
-#include "solarnode_debug.h"
+#include "solarnode_ukhasnet.h"
 #include "rfm69_config.h"
 #include "rfm69_rdl.h"
 
@@ -91,15 +91,8 @@ int rfm69_frame_tx(SPIDriver* SPID, uint8_t *buf, int len) {
     // Write frame to FIFO
     spiSelect(SPID);
     rfm69_spi_transfer_byte(SPID, RFM69_FIFO | 0x80);
-    // packet length
     rfm69_spi_transfer_byte(SPID, len);
     spiSend(SPID, len, buf);
-/*
-    int i;
-    for (i = 0; i < len; i++) {
-        rfm69_spi_transfer_byte(SPID, buf[i]);
-    }
-*/
     spiUnselect(SPID);
 
     // TX packet
@@ -139,6 +132,14 @@ static bool calibrate_rssi(SPIDriver* SPID) {
     return true;
 }
 
+static int set_idle_mode(SPIDriver* SPID) {
+    if (node_state == STATE_ZOMBIE) {
+        return rfm69_mode(SPID, RFM69_OPMODE_Mode_SLEEP);
+    } else {
+        return rfm69_mode(SPID, RFM69_OPMODE_Mode_RX);
+    }
+}
+
 
 void radio_loop(SPIDriver* SPID) {
     msg_t status;
@@ -168,7 +169,8 @@ void radio_loop(SPIDriver* SPID) {
             return;
         }
         chPoolFree(&rfm69_mp, (void *)msgp);
-        if (rfm69_mode(SPID, RFM69_OPMODE_Mode_RX) != 0) {
+
+        if (set_idle_mode(SPID) != 0) {
             return;
         }
     }
@@ -189,7 +191,7 @@ static THD_FUNCTION(rfm69_thread, arg) {
         if (!rfm69_config(&SPID1)) {
             continue;
         }
-        if (rfm69_mode(&SPID1, RFM69_OPMODE_Mode_RX) != 0) {
+        if (set_idle_mode(&SPID1) != 0) {
             continue;
         }
 
