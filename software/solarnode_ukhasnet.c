@@ -25,11 +25,12 @@ static void transmitPacket(const char counter, const adc_values_t values) {
     } else {
         // Normal packet
         pos += chsnprintf(((char *)&sendbuf) + pos, MAX_MESSAGE - pos,
-                          "T%.1fV%.1f,%.1f,%.1fI%.2fZ%iX%i,%i", values.internal_temp,
+                          "T%.1fV%.1f,%.1f,%.1fI%.2fZ%iX%i", values.internal_temp,
                           values.supply_voltage, values.batt_voltage, values.vdda_voltage,
                           values.charge_current,
                           node_state == STATE_ZOMBIE,
-                          !palReadPad(GPIOF, GPIOF_BATT_CHARGE), !palReadPad(GPIOF, GPIOF_BATT_OK));
+                          (!palReadPad(GPIOF, GPIOF_BATT_CHARGE)) | (!palReadPad(GPIOF, GPIOF_BATT_OK)) << 1
+                          );
     }
 
     chsnprintf(((char *)&sendbuf) + pos, MAX_MESSAGE - pos, "[%s]", node_config.name);
