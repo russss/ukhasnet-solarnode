@@ -15,7 +15,7 @@ volatile bool rfm69_ok = false;
 volatile systime_t rfm69_last_reset = 0;
 volatile char rfm69_rssi_threshold = 0;
 
-static THD_WORKING_AREA(rfmWorkingArea, 200);
+static THD_WORKING_AREA(rfmWorkingArea, 128);
 
 static volatile char rfm69_mp_b[MAILBOX_SIZE * MAX_MESSAGE];
 MEMORYPOOL_DECL(rfm69_mp, MAX_MESSAGE, NULL);

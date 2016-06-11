@@ -1,5 +1,5 @@
-#ifndef __SOLARNODE_LED_H__
-#define __SOLARNODE_LED_H__
+#ifndef __SOLARNODE_UKHASNET_H__
+#define __SOLARNODE_UKHASNET_H__
 
 void ukhasnetInit(void);
 

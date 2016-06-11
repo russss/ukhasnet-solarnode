@@ -6,10 +6,17 @@
 typedef struct {
     char magic;
     char name[16];
+    char position[12];
+    uint16_t tx_interval;
+    uint16_t tx_interval_low;
 } solarnode_config_t;
 
 extern solarnode_config_t node_config;
 void ConfigInit(void);
-void ConfigSave(void);
+int ConfigSave(void);
+
+#define FLASH_OK            0
+#define FLASH_UNLOCK_FAILED 1
+#define FLASH_EOP_FAILED    2
 
 #endif

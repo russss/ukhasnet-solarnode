@@ -1,4 +1,5 @@
 #include <string.h>
+#include <stdlib.h>
 #include "ch.h"
 #include "hal.h"
 #include "chprintf.h"
@@ -74,12 +75,28 @@ static void cmd_test(BaseSequentialStream *chp, int argc, char *argv[]) {
 static void cmd_config(BaseSequentialStream *chp, int argc, char *argv[]) {
     if (argc == 2) {
         if (strcmp(argv[0], "name") == 0) {
-            strcpy(node_config.name, argv[1]);
+            strncpy(node_config.name, argv[1], sizeof(node_config.name));
         }
-
-        ConfigSave();
+        if (strcmp(argv[0], "position") == 0) {
+            strncpy(node_config.position, argv[1], sizeof(node_config.position));
+        }/*
+        if (strcmp(argv[0], "txinterval") == 0) {
+            node_config.tx_interval = atoi(argv[1]);
+        }
+        if (strcmp(argv[0], "txinterval_low") == 0) {
+            node_config.tx_interval_low = atoi(argv[1]);
+        }*/
+        int ret = ConfigSave();
+        if (ret != FLASH_OK) {
+            chprintf(chp, "Flash write failed with status: %i\n", ret);
+        }
     }
-    chprintf(chp, "Name:                 %s\n",  node_config.name);
+    chprintf(chp, "Node Configuration");
+    chprintf(chp, "------------------");
+    chprintf(chp, "Name:                    %s\n",  node_config.name);
+    chprintf(chp, "Position:                %s\n",  node_config.position);
+    chprintf(chp, "Tx Interval:             %s\n",  node_config.tx_interval);
+    chprintf(chp, "Tx Interval (low batt):  %s\n",  node_config.tx_interval_low);
 }
 
 
