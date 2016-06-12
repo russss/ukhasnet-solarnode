@@ -11,7 +11,9 @@ typedef struct {
     uint16_t tx_interval;
     uint16_t tx_interval_low;
     uint16_t low_power_threshold;
-    char zombie;
+    int8_t output_power;
+    bool zombie;
+    bool rfm69h;
 } solarnode_config_t;
 
 extern solarnode_config_t node_config;

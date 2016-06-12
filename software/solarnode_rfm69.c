@@ -4,6 +4,7 @@
 #include "ch.h"
 #include "hal.h"
 #include "solarnode_rfm69.h"
+#include "solarnode_config.h"
 #include "solarnode_ukhasnet.h"
 #include "rfm69_config.h"
 #include "rfm69_rdl.h"
@@ -128,6 +129,23 @@ static bool rfm69_config(SPIDriver* SPID) {
     return true;
 }
 
+static bool rfm69_set_power(SPIDriver* SPID, int8_t power, bool rfm69h) {
+    // TODO: High power settings 19-20dBm (RFM69HW manual section 3.3.7)
+    uint8_t RegPaLevel = 0;
+    if (power < -18 || (power > 17 && rfm69h) || (power > 13 && !rfm69h)) {
+        return false;
+    }
+    if (power < -2 || !rfm69h) {
+        RegPaLevel = RFM69_PALEVEL_Pa0On | (power + 18);
+    } else if (power < 13) {
+        RegPaLevel = RFM69_PALEVEL_Pa1On | (power + 18);
+    } else {
+        RegPaLevel = RFM69_PALEVEL_Pa1On | RFM69_PALEVEL_Pa2On | (power + 18);
+    }
+    rfm69_register_write(SPID, RFM69_PALEVEL, RegPaLevel);
+    return true;
+}
+
 static bool calibrate_rssi(SPIDriver* SPID) {
     char i;
     int sum = 0;
@@ -219,6 +237,9 @@ static THD_FUNCTION(rfm69_thread, arg) {
             rfm69_reset();
         }
         if (!rfm69_config(&SPID1)) {
+            continue;
+        }
+        if (!rfm69_set_power(&SPID1, node_config.output_power, node_config.rfm69h)) {
             continue;
         }
         if (set_idle_mode(&SPID1) != 0) {

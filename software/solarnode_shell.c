@@ -38,10 +38,12 @@ static void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[]) {
       chprintf(chp, "Usage: threads\r\n");
       return;
     }
-    chprintf(chp, "    addr    stack prio refs     state\r\n");
+    chprintf(chp, "%10s|%8s|%8s|%5s|%5s|%9s\n",
+                    "name", "addr", "stack", "prio", "refs", "state");
+    chprintf(chp, "--------------------------------------------------\n");
     tp = chRegFirstThread();
     do {
-      chprintf(chp, "%10s %08lx %08lx %4lu %4lu %9s %lu\r\n",
+      chprintf(chp, "%10s|%08lx|%08lx|%5lu|%5lu|%9s\r\n",
                tp->p_name, (uint32_t)tp, (uint32_t)tp->p_ctx.r13,
                (uint32_t)tp->p_prio, (uint32_t)(tp->p_refs - 1),
                states[tp->p_state]);
@@ -96,6 +98,12 @@ static void cmd_config(BaseSequentialStream *chp, int argc, char *argv[]) {
         if (strcmp(argv[0], "zombie") == 0) {
             node_config.zombie = (argv[1][0] == '1');
         }
+        if (strcmp(argv[0], "output_power") == 0) {
+            node_config.output_power = atoi(argv[1]);
+        }
+        if (strcmp(argv[0], "rfm69h") == 0) {
+            node_config.rfm69h = (argv[1][0] == '1');
+        }
         int ret = ConfigSave();
         if (ret != FLASH_OK) {
             chprintf(chp, "Flash write failed with status: %i\n", ret);
@@ -106,10 +114,12 @@ static void cmd_config(BaseSequentialStream *chp, int argc, char *argv[]) {
     chprintf(chp, "name:                    %s\n",  node_config.name);
     chprintf(chp, "position:                %s\n",  node_config.position);
     chprintf(chp, "repeat_count:            %i\n",  node_config.repeat_count);
-    chprintf(chp, "tx_interval:             %i  seconds\n",  node_config.tx_interval);
-    chprintf(chp, "tx_interval_low:         %i  seconds\n",  node_config.tx_interval_low);
-    chprintf(chp, "low_power_threshold:     %i  mV\n",  node_config.low_power_threshold);
+    chprintf(chp, "tx_interval:             %i seconds\n",  node_config.tx_interval);
+    chprintf(chp, "tx_interval_low:         %i seconds\n",  node_config.tx_interval_low);
+    chprintf(chp, "low_power_threshold:     %i mV\n",  node_config.low_power_threshold);
     chprintf(chp, "zombie:                  %i\n", node_config.zombie);
+    chprintf(chp, "output_power:            %i dBmW\n", node_config.output_power);
+    chprintf(chp, "rfm69h:                  %i\n", node_config.rfm69h);
 }
 
 
