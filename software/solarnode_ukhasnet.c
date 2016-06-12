@@ -77,6 +77,28 @@ static THD_FUNCTION(transmit_thread, arg) {
     }
 }
 
+char repeatPacket(uint8_t *packet, uint8_t packet_len) {
+    uint8_t name_len = strlen(node_config.name);
+    if (*packet < 49 || *packet > 57 || *(packet + packet_len - 1) != ']') {
+        // Invalid packet format (or first byte is 0, so we drop)
+        return PACKET_DROP;
+    }
+    if (strstr((const char *)packet, (const char *)&node_config.name)) {
+        // We already repeated
+        return PACKET_DROP;
+    }
+    if (packet_len + name_len + 1 > MAX_MESSAGE) {
+        // Too long to repeat
+        return PACKET_DROP;
+    }
+
+    (*packet)--;
+    *(packet + packet_len - 1) = ',';
+    memcpy((void*)(packet + packet_len), (void *)&node_config.name, name_len);
+    *(packet + packet_len + name_len) = ']';
+    return PACKET_REPEAT;
+}
+
 void ukhasnetInit() {
     chThdCreateStatic(transmitWorkingArea, sizeof(transmitWorkingArea), NORMALPRIO, transmit_thread, NULL);
 }

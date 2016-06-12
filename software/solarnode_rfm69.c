@@ -53,6 +53,16 @@ static uint8_t rfm69_register_read(SPIDriver* SPID, uint8_t reg_addr) {
     return reg_value;
 }
 
+static uint8_t rfm69_fifo_read(SPIDriver *SPID, uint8_t* buf) {
+    uint8_t length;
+    spiSelect(SPID);
+    rfm69_spi_transfer_byte(SPID, RFM69_FIFO & ~0x80);
+    length = rfm69_spi_transfer_byte(SPID, 0xff);
+    spiReceive(SPID, length, buf);
+    spiUnselect(SPID);
+    return length;
+}
+
 static void rfm69_register_write (SPIDriver* SPID, uint8_t reg_addr, uint8_t reg_value) {
     spiSelect(SPID);
     rfm69_spi_transfer_byte (SPID, reg_addr | 0x80);
@@ -78,6 +88,12 @@ int rfm69_mode (SPIDriver* SPID, uint8_t mode) {
     rfm69_register_write(SPID, RFM69_OPMODE,regVal);
 
     return rfm69_wait_for_bit_high(SPID, RFM69_IRQFLAGS1, RFM69_IRQFLAGS1_ModeReady);
+}
+
+void rfm69_restart_rx(SPIDriver* SPID) {
+    uint8_t regVal = rfm69_register_read(SPID, RFM69_PACKETCONFIG2);
+    regVal |= RFM69_PACKETCONFIG2_RestartRx;
+    rfm69_register_write(SPID, RFM69_PACKETCONFIG2, regVal);
 }
 
 int rfm69_frame_tx(SPIDriver* SPID, uint8_t *buf, int len) {
@@ -106,7 +122,6 @@ int rfm69_frame_tx(SPIDriver* SPID, uint8_t *buf, int len) {
 
 static bool rfm69_config(SPIDriver* SPID) {
     int i;
-    char val;
     for (i = 0; RFM69_CONFIG[i][0] != 255; i++) {
         rfm69_register_write(SPID, RFM69_CONFIG[i][0], RFM69_CONFIG[i][1]);
     }
@@ -140,6 +155,20 @@ static int set_idle_mode(SPIDriver* SPID) {
     }
 }
 
+static void check_received_packet(SPIDriver *SPID) {
+    if ((rfm69_register_read(SPID, RFM69_IRQFLAGS2) & RFM69_IRQFLAGS2_PayloadReady) != 0) {
+        uint8_t packet_len;
+        uint8_t rfm69_packet_buf[MAX_MESSAGE];
+        memset((void *)&rfm69_packet_buf, 0, MAX_MESSAGE);
+        packet_len = rfm69_fifo_read(SPID, (uint8_t *)&rfm69_packet_buf);
+        if (repeatPacket((uint8_t *)&rfm69_packet_buf, packet_len) == PACKET_REPEAT) {
+            rfm69Send((char *)&rfm69_packet_buf);
+        }
+    } else if ((rfm69_register_read(SPID, RFM69_IRQFLAGS1) & RFM69_IRQFLAGS1_Timeout) != 0) {
+        rfm69_restart_rx(SPID);
+    }
+}
+
 
 void radio_loop(SPIDriver* SPID) {
     msg_t status;
@@ -147,19 +176,20 @@ void radio_loop(SPIDriver* SPID) {
     systime_t last_rssi_calibration = 0;
 
     while(true) {
-        if (last_rssi_calibration == 0 || ST2S(chVTTimeElapsedSinceX(last_rssi_calibration)) > 600) { // TODO: check wraparound
+        // TODO: check wraparound?
+        if (node_state != STATE_ZOMBIE &&
+                (last_rssi_calibration == 0 || ST2S(chVTTimeElapsedSinceX(last_rssi_calibration)) > 600)) {
             if (!calibrate_rssi(SPID)) {
                 return;
             }
             last_rssi_calibration = chVTGetSystemTime();
         }
-        /*
-        if (rfm69_wait_for_bit_high(SPID, RFM69_IRQFLAGS2, RFM69_IRQFLAGS2_PayloadReady) == 0) {
-            // Packet ready
-        } else if ((rfm69_register_read(SPID, RFM69_IRQFLAGS1) & RFM69_IRQFLAGS1_Timeout) != 0) {
-            // Receive timeout. Restart the receiver.
+
+        if (node_state != STATE_ZOMBIE) {
+            check_received_packet(SPID);
         }
-        */
+
+        // Sleep waiting for something to transmit
         status = chMBFetch(&rfm69_tx_mailbox, (msg_t*)&msgp, MS2ST(200));
         if (status != MSG_OK || msgp == 0) {
             // No messages to send, loop around
