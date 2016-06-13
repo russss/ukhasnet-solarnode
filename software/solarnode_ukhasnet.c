@@ -25,7 +25,7 @@ static void transmitPacket(const char counter, const adc_values_t values) {
     } else {
         // Normal packet
         pos += chsnprintf(((char *)&sendbuf) + pos, MAX_MESSAGE - pos,
-                          "T%.1fV%.1f,%.1f,%.1fI%.2fZ%iX%i", values.internal_temp,
+                          "T%.1fV%.2f,%.2f,%.2fI%.2fZ%iX%i", values.internal_temp,
                           values.supply_voltage, values.batt_voltage, values.vdda_voltage,
                           values.charge_current,
                           node_state == STATE_ZOMBIE,
