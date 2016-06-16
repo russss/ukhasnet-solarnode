@@ -215,5 +215,11 @@ ULIBS = --specs=nano.specs # --specs=rdimon.specs -lm -lc -lrdimon
 # End of user defines
 ##############################################################################
 
+actually_all: version all
+
+version:
+	sed -e "s/%GITREV%/`git rev-parse --short HEAD`/g" -e "s/%BUILDDATE%/`date`/g" \
+			./version.h > ./solarnode_version.h
+
 RULESPATH = $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC
 include $(RULESPATH)/rules.mk

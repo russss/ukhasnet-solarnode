@@ -1,0 +1,8 @@
+#ifndef __SOLARNODE_VERSION_H__
+#define __SOLARNODE_VERSION_H__
+
+#define SOLARNODE_VERSION "0.1"
+#define SOLARNODE_GIT_REV "%GITREV%"
+#define SOLARNODE_BUILD_DATE "%BUILDDATE%"
+
+#endif

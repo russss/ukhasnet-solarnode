@@ -1,4 +1,3 @@
-* Watchdog
-* CPU power saving
-* Investigate brownout detection
+* Test RFM69H power settings
 * Version command
+* License

@@ -11,9 +11,18 @@
 #include "solarnode_onewire.h"
 #include "solarnode_usb.h"
 #include "solarnode_rfm69.h"
+#include "solarnode_version.h"
 
 static THD_WORKING_AREA(shellWorkingArea, 1024);
 static thread_t *shelltp = NULL;
+
+static void cmd_version(BaseSequentialStream *chp, int argc, char *argv[]) {
+    (void)argv;
+    chprintf(chp, "Solarnode Software\n");
+    chprintf(chp, "Version:      %s\n", SOLARNODE_VERSION);
+    chprintf(chp, "Git revision: %s\n", SOLARNODE_GIT_REV);
+    chprintf(chp, "Build date:   %s\n", SOLARNODE_BUILD_DATE);
+}
 
 static void cmd_mem(BaseSequentialStream *chp, int argc, char *argv[]) {
   size_t n, size;
@@ -136,6 +145,7 @@ static const ShellCommand commands[] = {
     {"test", cmd_test},
     {"threads", cmd_threads},
     {"config", cmd_config},
+    {"version", cmd_version},
     {NULL, NULL}
 };
 
