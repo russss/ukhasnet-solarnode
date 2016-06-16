@@ -3,6 +3,7 @@
 #include "hal.h"
 #include "chprintf.h"
 #include "solarnode_ukhasnet.h"
+#include "solarnode_onewire.h"
 #include "solarnode_config.h"
 #include "solarnode_adc.h"
 #include "solarnode_rfm69.h"
@@ -14,6 +15,7 @@ static THD_WORKING_AREA(transmitWorkingArea, 256);
 static void transmitPacket(const char counter, const adc_values_t values) {
     char sendbuf[MAX_MESSAGE];
     char pos = 0;
+    float temp_value;
 
     pos += chsnprintf(((char *)&sendbuf) + pos, MAX_MESSAGE - pos, "%i%c",
                        node_config.repeat_count, counter);
@@ -25,7 +27,13 @@ static void transmitPacket(const char counter, const adc_values_t values) {
     } else {
         // Normal packet
         pos += chsnprintf(((char *)&sendbuf) + pos, MAX_MESSAGE - pos,
-                          "T%.1fV%.2f,%.2f,%.2fI%.2fZ%iX%i", values.internal_temp,
+                          "T%.1f", values.internal_temp);
+        if (oneWireTempRead(&temp_value) == OW_SUCCESS) {
+            pos += chsnprintf(((char *)&sendbuf) + pos, MAX_MESSAGE - pos,
+                              ",%.1f", temp_value);
+        }
+        pos += chsnprintf(((char *)&sendbuf) + pos, MAX_MESSAGE - pos,
+                          "V%.2f,%.2f,%.2fI%.2fZ%iX%i",
                           values.supply_voltage, values.batt_voltage, values.vdda_voltage,
                           values.charge_current,
                           node_state == STATE_ZOMBIE,

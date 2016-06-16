@@ -1,4 +1,3 @@
-* Make 1-wire work
 * Watchdog
 * CPU power saving
 * Investigate brownout detection

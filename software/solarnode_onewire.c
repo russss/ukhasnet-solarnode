@@ -27,8 +27,6 @@ static const GPTConfig gpt3cfg = {
 
 void oneWireInit() {
     gptStart(&GPTD3, &gpt3cfg);
-    // GPT seems to need one delay to get going
-    gptPolledDelay(&GPTD3, 10);
 }
 
 static void SendByte(uint8_t val) {
@@ -74,29 +72,60 @@ static bool InitBus() {
     bool res;
     owLow();
     owOutput();
-    chThdSleepMicroseconds(510);
+    chThdSleepMicroseconds(500);
+    // This polled delay appears to be necessary to wake the timer up,
+    // so the following delay is accurate.
+    owDelayus(10);
     owHigh();
     owInput();
-    owDelayus(30);
+    owDelayus(80);
     res = owReadBit();
     chThdSleepMicroseconds(410);
     return !res;
 }
 
+uint8_t ow_crc8(const uint8_t *addr, uint8_t len) {
+    uint8_t inbyte, i, mix;
+    uint8_t crc = 0;
+    while (len--) {
+        inbyte = *addr++;
+        for (i = 8; i; i--) {
+            mix = (crc ^ inbyte) & 0x01;
+            crc >>= 1;
+            if (mix) {
+                crc ^= 0x8C;
+            }
+            inbyte >>= 1;
+        }
+    }
+    return crc;
+}
+
 uint8_t oneWireTempRead(float* value) {
     uint8_t n;
-    uint8_t pad[8];
-    InitBus();
+    uint8_t pad[9];
+    if (!InitBus()) {
+        return OW_NO_DEVICES;
+    }
     SendByte(SKIP_ROM);
     SendByte(CONVERT_TEMP);
+    // Conversion time at 12-bit resolution == 750ms
     chThdSleepMilliseconds(760);
-    InitBus();
+    if (!InitBus()) {
+        return OW_ERROR;
+    }
     SendByte(SKIP_ROM);
     SendByte(READ_SCRATCHPAD);
-    for (n=0; n<8; n++) {
+    for (n=0; n<9; n++) {
         pad[n] = ReadByte();
     }
-    // TODO: CRC
+    if (ow_crc8((const uint8_t *)&pad, 8) != pad[8]) {
+        return OW_CRC_ERROR;
+    }
+    if (pad[TEMP_LSB] == 0x50 && pad[TEMP_MSB] == 0x05) {
+        // Default values for temperature, assume error.
+        return OW_ERROR;
+    }
     *value = (int16_t)((pad[TEMP_MSB] << 8) | pad[TEMP_LSB]) / 16.0;
     return OW_SUCCESS;
 }
