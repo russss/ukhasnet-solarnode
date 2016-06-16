@@ -114,7 +114,7 @@ CSRC = $(STARTUPSRC) \
        $(CHIBIOS)/os/hal/lib/streams/memstreams.c \
        $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
 			 $(CHIBIOS)/os/various/shell.c \
-			 main.c solarnode_usb.c solarnode_debug.c solarnode_shell.c \
+			 main.c solarnode_usb.c  solarnode_shell.c \
 			 solarnode_adc.c solarnode_onewire.c solarnode_config.c \
 			 solarnode_rfm69.c solarnode_led.c solarnode_ukhasnet.c
 
@@ -197,7 +197,7 @@ CPPWARN = -Wall -Wextra -Wundef
 #
 
 # List all user C define here, like -D_DEBUG=1
-UDEFS = -DCHPRINTF_USE_FLOAT=1 # -D_DEBUG=1
+UDEFS = -DCHPRINTF_USE_FLOAT=1 -D_DEBUG=1
 
 # Define ASM defines here
 UADEFS =
