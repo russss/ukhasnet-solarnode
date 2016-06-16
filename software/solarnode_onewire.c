@@ -1,70 +1,103 @@
 #include <string.h>
 #include "ch.h"
 #include "hal.h"
-#include "onewire.h"
 #include "solarnode_onewire.h"
 #include "solarnode_hardware.h"
 
-#define ONEWIRE_MASTER_CHANNEL        2
-#define ONEWIRE_SAMPLE_CHANNEL        3
-#define ONEWIRE_PAD_MODE_ACTIVE       (PAL_MODE_ALTERNATE(1) | PAL_STM32_OTYPE_OPENDRAIN)
+#define  READ_ROM               0x33
+#define  SKIP_ROM               0xcc
+#define  READ_SCRATCHPAD        0xbe
+#define  CONVERT_TEMP           0x44
 
-static PWMConfig pwm_cfg = {
-    0,
-    0,
-    NULL,
-    {
-     {PWM_OUTPUT_DISABLED, NULL},
-     {PWM_OUTPUT_DISABLED, NULL},
-     {PWM_OUTPUT_DISABLED, NULL},
-     {PWM_OUTPUT_DISABLED, NULL}
-    },
-    0,
-#if STM32_PWM_USE_ADVANCED
-    0,
-#endif
-    0
+#define TEMP_LSB                0
+#define TEMP_MSB                1
+
+#define owInput()        palSetPadMode(GPIOA, GPIOA_ONEWIRE, PAL_MODE_INPUT)
+#define owOutput()       palSetPadMode(GPIOA, GPIOA_ONEWIRE, PAL_MODE_OUTPUT_PUSHPULL)
+#define owHigh()         palSetPad(GPIOA, GPIOA_ONEWIRE)
+#define owLow()          palClearPad(GPIOA, GPIOA_ONEWIRE)
+#define owReadBit()      palReadPad(GPIOA, GPIOA_ONEWIRE)
+#define owDelayus(delay) gptPolledDelay(&GPTD3, delay);
+
+static const GPTConfig gpt3cfg = {
+  1000000, // 1 MHz timer clock.
+  NULL, // No callback
+  0, 0
 };
-
-static const onewireConfig ow_cfg = {
-    &PWMD1,
-    &pwm_cfg,
-    PWM_OUTPUT_ACTIVE_LOW,
-    ONEWIRE_MASTER_CHANNEL,
-    ONEWIRE_SAMPLE_CHANNEL,
-    GPIOA,
-    GPIOA_ONEWIRE,
-#if defined(STM32F1XX)
-    ONEWIRE_PAD_MODE_IDLE,
-#endif
-    ONEWIRE_PAD_MODE_ACTIVE,
-};
-
 
 void oneWireInit() {
-    onewireObjectInit(&OWD1);
+    gptStart(&GPTD3, &gpt3cfg);
+    // GPT seems to need one delay to get going
+    gptPolledDelay(&GPTD3, 10);
 }
 
-char oneWireTempRead() {
-    char temp = -127;
-    uint8_t rombuf[24];
-    uint8_t testbuf[12];
-    size_t devices_on_bus = 0;
+static void SendByte(uint8_t val) {
+    uint8_t n;
+    owHigh();
+    owOutput();
+    for (n=0; n<8; n++) {
+        owLow();
+        if (val & 1) {
+            owDelayus(6);
+            owHigh();
+            owDelayus(64);
+        } else {
+            owDelayus(60);
+            owHigh();
+            owDelayus(10);
+        }
+        val = val >> 1;
+    }
+}
 
-    onewireStart(&OWD1, &ow_cfg);
-    while(onewireReset(&OWD1) == false) {
-        chThdSleepMilliseconds(1);
+
+static uint8_t ReadByte(void) {
+    uint8_t n;
+    uint8_t val = 0;
+    for (n=0; n<8; n++) {
+        val = val >> 1;
+        owLow();
+        owOutput();
+        owDelayus(6);
+        owHigh();
+        owInput();
+        owDelayus(9);
+        if (owReadBit()) {
+            val = val | 0x80;
+        }
+        owDelayus(55);
     }
-    memset(rombuf, 0x55, sizeof(rombuf));
-    devices_on_bus = onewireSearchRom(&OWD1, rombuf, 3);
-    if (devices_on_bus == 1) {
-        testbuf[0] = ONEWIRE_CMD_READ_ROM;
-        onewireWrite(&OWD1, testbuf, 1, 0);
-        onewireRead(&OWD1, testbuf, 8);
-        osalDbgCheck(testbuf[7] == onewireCRC(testbuf, 7));
-        osalDbgCheck(0 == memcmp(rombuf, testbuf, 8));
+    return  val;
+}
+
+static bool InitBus() {
+    bool res;
+    owLow();
+    owOutput();
+    chThdSleepMicroseconds(510);
+    owHigh();
+    owInput();
+    owDelayus(30);
+    res = owReadBit();
+    chThdSleepMicroseconds(410);
+    return !res;
+}
+
+uint8_t oneWireTempRead(float* value) {
+    uint8_t n;
+    uint8_t pad[8];
+    InitBus();
+    SendByte(SKIP_ROM);
+    SendByte(CONVERT_TEMP);
+    chThdSleepMilliseconds(760);
+    InitBus();
+    SendByte(SKIP_ROM);
+    SendByte(READ_SCRATCHPAD);
+    for (n=0; n<8; n++) {
+        pad[n] = ReadByte();
     }
-    onewireStop(&OWD1);
-    return temp;
+    // TODO: CRC
+    *value = (int16_t)((pad[TEMP_MSB] << 8) | pad[TEMP_LSB]) / 16.0;
+    return OW_SUCCESS;
 }
 

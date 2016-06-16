@@ -25,7 +25,7 @@ solarnode_config_t node_config;
 // TODO: remove testing config and set this to something more sensible
 const solarnode_config_t default_config = {
     CONFIG_MAGIC,
-    "RUSSTEST",
+    "RUSSTEST1",
     "51.54,-0.09",
     1,
     20,

@@ -73,6 +73,14 @@ static void cmd_test(BaseSequentialStream *chp, int argc, char *argv[]) {
     } else {
         chprintf(chp, "Radio FAILED.\n");
     }
+    float ow_result;
+    uint8_t ow_error;
+    ow_error = oneWireTempRead(&ow_result);
+    if (ow_error == OW_SUCCESS) {
+        chprintf(chp, "1-wire temperature: %f\n", ow_result);
+    } else {
+        chprintf(chp, "1-wire read: FAILED (error %i)\n", ow_error);
+    }
 }
 
 static void cmd_config(BaseSequentialStream *chp, int argc, char *argv[]) {
