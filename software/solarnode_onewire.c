@@ -73,8 +73,8 @@ static bool InitBus() {
     owLow();
     owOutput();
     chThdSleepMicroseconds(500);
-    // This polled delay appears to be necessary to wake the timer up,
-    // so the following delay is accurate.
+    // The following polled delay appears to be necessary to wake the timer up,
+    // so the next delay is accurate.
     owDelayus(10);
     owHigh();
     owInput();
@@ -128,5 +128,17 @@ uint8_t oneWireTempRead(float* value) {
     }
     *value = (int16_t)((pad[TEMP_MSB] << 8) | pad[TEMP_LSB]) / 16.0;
     return OW_SUCCESS;
+}
+
+uint8_t oneWireTempReadRetry(float* value) {
+    uint8_t i, err;
+    for (i = 0; i < 3; i++) {
+        err = oneWireTempRead(value);
+        if (err == OW_SUCCESS) {
+            return err;
+        }
+        chThdSleepMilliseconds(50);
+    }
+    return err;
 }
 

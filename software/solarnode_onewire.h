@@ -3,6 +3,7 @@
 
 void oneWireInit(void);
 uint8_t oneWireTempRead(float* value);
+uint8_t oneWireTempReadRetry(float* value);
 
 #define OW_SUCCESS      0
 #define OW_ERROR        1

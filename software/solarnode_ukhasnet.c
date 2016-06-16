@@ -28,7 +28,7 @@ static void transmitPacket(const char counter, const adc_values_t values) {
         // Normal packet
         pos += chsnprintf(((char *)&sendbuf) + pos, MAX_MESSAGE - pos,
                           "T%.1f", values.internal_temp);
-        if (oneWireTempRead(&temp_value) == OW_SUCCESS) {
+        if (oneWireTempReadRetry(&temp_value) == OW_SUCCESS) {
             pos += chsnprintf(((char *)&sendbuf) + pos, MAX_MESSAGE - pos,
                               ",%.1f", temp_value);
         }
