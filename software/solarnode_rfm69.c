@@ -64,6 +64,14 @@ static uint8_t rfm69_fifo_read(SPIDriver *SPID, uint8_t* buf) {
     return length;
 }
 
+static void rfm69_fifo_write(SPIDriver *SPID, uint8_t* buf, uint8_t length) {
+    spiSelect(SPID);
+    rfm69_spi_transfer_byte(SPID, RFM69_FIFO | 0x80);
+    rfm69_spi_transfer_byte(SPID, length);
+    spiSend(SPID, length, buf);
+    spiUnselect(SPID);
+}
+
 static void rfm69_register_write (SPIDriver* SPID, uint8_t reg_addr, uint8_t reg_value) {
     spiSelect(SPID);
     rfm69_spi_transfer_byte (SPID, reg_addr | 0x80);
@@ -97,23 +105,66 @@ void rfm69_restart_rx(SPIDriver* SPID) {
     rfm69_register_write(SPID, RFM69_PACKETCONFIG2, regVal);
 }
 
+/* Set RFM69 output power in dBm.
+ * NOTE: if the power is set to greater than +17 dBm, it must be reduced to below this
+ * level after transmission.
+ */
+static bool rfm69_set_power(SPIDriver* SPID, int8_t power, bool rfm69h) {
+    uint8_t RegPaLevel = 0;
+    if (power < -18 || (power > 20 && rfm69h) || (power > 13 && !rfm69h)) {
+        return false;
+    }
+
+    if (power < -2 || !rfm69h) {
+        RegPaLevel = RFM69_PALEVEL_Pa0On | (power + 18);
+    } else if (power < 14) {
+        RegPaLevel = RFM69_PALEVEL_Pa1On | (power + 18);
+    } else if (power < 18) {
+        RegPaLevel = RFM69_PALEVEL_Pa1On | RFM69_PALEVEL_Pa2On | (power + 14);
+    } else {
+        RegPaLevel = RFM69_PALEVEL_Pa1On | RFM69_PALEVEL_Pa2On | (power + 11);
+    }
+
+    if (power > 17) {
+        // Disable overcurrent protection
+        rfm69_register_write(SPID, RFM69_OCP, 0x0F);
+        // High power settings 18-20dBm (RFM69HW manual section 3.3.7)
+        rfm69_register_write(SPID, 0x5A, 0x5D);
+        rfm69_register_write(SPID, 0x5C, 0x7C);
+    } else {
+        rfm69_register_write(SPID, RFM69_OCP, 0x1A);
+        rfm69_register_write(SPID, 0x5A, 0x55);
+        rfm69_register_write(SPID, 0x5C, 0x70);
+    }
+
+    rfm69_register_write(SPID, RFM69_PALEVEL, RegPaLevel);
+    return true;
+}
+
+
 int rfm69_frame_tx(SPIDriver* SPID, uint8_t *buf, int len) {
-    // Power up TX
+    // Set transmit power
+    if (!rfm69_set_power(&SPID1, node_config.output_power, node_config.rfm69h)) {
+        return -1;
+    }
+
+    // Power up TX and wait for state to stabilise
     if (rfm69_mode(SPID, RFM69_OPMODE_Mode_TX) != 0) {
         return -1;
     }
     if (rfm69_wait_for_bit_high(SPID, RFM69_IRQFLAGS1, RFM69_IRQFLAGS1_TxReady) != 0) {
         return -1;
     }
-    // Write frame to FIFO
-    spiSelect(SPID);
-    rfm69_spi_transfer_byte(SPID, RFM69_FIFO | 0x80);
-    rfm69_spi_transfer_byte(SPID, len);
-    spiSend(SPID, len, buf);
-    spiUnselect(SPID);
+
+    rfm69_fifo_write(SPID, buf, len);
 
     // TX packet
     if (rfm69_wait_for_bit_high(SPID, RFM69_IRQFLAGS2, RFM69_IRQFLAGS2_PacketSent) != 0 ) {
+        return -1;
+    }
+
+    // Return power to a safe level for receive
+    if (!rfm69_set_power(&SPID1, 13, node_config.rfm69h)) {
         return -1;
     }
     // Back to standby
@@ -129,22 +180,6 @@ static bool rfm69_config(SPIDriver* SPID) {
     return true;
 }
 
-static bool rfm69_set_power(SPIDriver* SPID, int8_t power, bool rfm69h) {
-    // TODO: High power settings 19-20dBm (RFM69HW manual section 3.3.7)
-    uint8_t RegPaLevel = 0;
-    if (power < -18 || (power > 17 && rfm69h) || (power > 13 && !rfm69h)) {
-        return false;
-    }
-    if (power < -2 || !rfm69h) {
-        RegPaLevel = RFM69_PALEVEL_Pa0On | (power + 18);
-    } else if (power < 13) {
-        RegPaLevel = RFM69_PALEVEL_Pa1On | (power + 18);
-    } else {
-        RegPaLevel = RFM69_PALEVEL_Pa1On | RFM69_PALEVEL_Pa2On | (power + 18);
-    }
-    rfm69_register_write(SPID, RFM69_PALEVEL, RegPaLevel);
-    return true;
-}
 
 static bool calibrate_rssi(SPIDriver* SPID) {
     char i;
@@ -237,9 +272,6 @@ static THD_FUNCTION(rfm69_thread, arg) {
             rfm69_reset();
         }
         if (!rfm69_config(&SPID1)) {
-            continue;
-        }
-        if (!rfm69_set_power(&SPID1, node_config.output_power, node_config.rfm69h)) {
             continue;
         }
         if (set_idle_mode(&SPID1) != 0) {
