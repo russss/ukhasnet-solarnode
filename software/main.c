@@ -21,7 +21,9 @@ static const WDGConfig wdgcfg = {
 };
 
 static void hardware_config(void) {
+    // Remap pins PA11 and PA12 to enable USB
     SYSCFG->CFGR1 |= SYSCFG_CFGR1_PA11_PA12_RMP;
+    // Stop watchdog when core is halted for debugging
     DBGMCU->APB1FZ |= DBGMCU_APB1_FZ_DBG_IWDG_STOP;
 }
 
