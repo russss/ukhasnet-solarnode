@@ -27,7 +27,17 @@ static void hardware_config(void) {
     DBGMCU->APB1FZ |= DBGMCU_APB1_FZ_DBG_IWDG_STOP;
 }
 
+static void jump_to_bootloader(void) {
+    SYSCFG->CFGR1 = 0x01;
+    __set_MSP(*((uint32_t*) 0x00000000));
+    ((void (*)(void)) *((uint32_t*) 0x00000004))();
+    while (1);
+}
+
 int main(void) {
+    if (RTC->BKP0R == 0x42) {
+        jump_to_bootloader();
+    }
     halInit();
     chSysInit();
     hardware_config();

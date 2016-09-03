@@ -142,6 +142,12 @@ static void cmd_config(BaseSequentialStream *chp, int argc, char *argv[]) {
     chprintf(chp, "rfm69h:                  %i\n", node_config.rfm69h);
 }
 
+static void cmd_upgrade(BaseSequentialStream *chp, int argc, char *argv[]) {
+    (void)argv;
+    chprintf(chp, "Starting bootloader...");
+    RTC->BKP0R = 0x42;
+    NVIC_SystemReset();
+}
 
 static const ShellCommand commands[] = {
     {"mem", cmd_mem},
@@ -149,6 +155,7 @@ static const ShellCommand commands[] = {
     {"threads", cmd_threads},
     {"config", cmd_config},
     {"version", cmd_version},
+    {"upgrade", cmd_upgrade},
     {NULL, NULL}
 };
 
