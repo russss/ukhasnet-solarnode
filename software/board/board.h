@@ -288,7 +288,7 @@
 #define VAL_GPIOA_ODR               (PIN_ODR_HIGH(GPIOA_VSUPPMON) |           \
                                      PIN_ODR_HIGH(GPIOA_ICHARGE) |           \
                                      PIN_ODR_HIGH(GPIOA_ONEWIRE) |           \
-                                     PIN_ODR_HIGH(GPIOA_RFM_RST) |           \
+                                     PIN_ODR_LOW(GPIOA_RFM_RST) |           \
                                      PIN_ODR_HIGH(GPIOA_NSS) |           \
                                      PIN_ODR_LOW(GPIOA_SCK) |            \
                                      PIN_ODR_LOW(GPIOA_MISO) |           \

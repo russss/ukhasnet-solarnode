@@ -34,6 +34,7 @@ static const SPIConfig spi_cfg = {
 };
 
 static void rfm69_reset(void) {
+    rfm69_last_reset = chVTGetSystemTime();
     palWritePad(GPIOA, GPIOA_RFM_RST, 1);
     chThdSleepMilliseconds(1);
     palWritePad(GPIOA, GPIOA_RFM_RST, 0);
@@ -261,11 +262,12 @@ void radio_loop(SPIDriver* SPID) {
 
 static THD_FUNCTION(rfm69_thread, arg) {
     (void) arg;
-
     chRegSetThreadName("RFM69");
+    chThdSleepMilliseconds(500);
+
+    spiStart(&SPID1, &spi_cfg);
 
     while(true) {
-        rfm69_last_reset = chVTGetSystemTime();
         rfm69_reset();
         while (rfm69_register_read(&SPID1, RFM69_VERSION) != 0x24) {
             chThdSleepMilliseconds(250);
@@ -287,7 +289,6 @@ static THD_FUNCTION(rfm69_thread, arg) {
 
 void rfm69Init() {
     chPoolLoadArray(&rfm69_mp, (void *)rfm69_mp_b, MAILBOX_SIZE);
-    spiStart(&SPID1, &spi_cfg);
     chThdCreateStatic(rfmWorkingArea, sizeof(rfmWorkingArea), NORMALPRIO, rfm69_thread, NULL);
 }
 
