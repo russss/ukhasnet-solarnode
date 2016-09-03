@@ -103,6 +103,7 @@ static void cmd_test(BaseSequentialStream *chp, int argc, char *argv[]) {
 static void cmd_config(BaseSequentialStream *chp, int argc, char *argv[]) {
     if (argc == 2) {
         if (strcmp(argv[0], "name") == 0) {
+            // TODO: validate name meets requirements
             strncpy(node_config.name, argv[1], sizeof(node_config.name));
         }
         if (strcmp(argv[0], "position") == 0) {
@@ -111,10 +112,10 @@ static void cmd_config(BaseSequentialStream *chp, int argc, char *argv[]) {
         if (strcmp(argv[0], "repeat_count") == 0) {
             node_config.repeat_count = atoi(argv[1]);
         }
-        if (strcmp(argv[0], "txinterval") == 0) {
+        if (strcmp(argv[0], "tx_interval") == 0) {
             node_config.tx_interval = atoi(argv[1]);
         }
-        if (strcmp(argv[0], "txinterval_low") == 0) {
+        if (strcmp(argv[0], "tx_interval_low") == 0) {
             node_config.tx_interval_low = atoi(argv[1]);
         }
         if (strcmp(argv[0], "low_power_threshold") == 0) {
@@ -124,6 +125,7 @@ static void cmd_config(BaseSequentialStream *chp, int argc, char *argv[]) {
             node_config.zombie = (argv[1][0] == '1');
         }
         if (strcmp(argv[0], "output_power") == 0) {
+            // TODO: validate power
             node_config.output_power = atoi(argv[1]);
         }
         if (strcmp(argv[0], "rfm69h") == 0) {
