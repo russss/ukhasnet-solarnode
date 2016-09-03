@@ -68,7 +68,7 @@ static uint8_t ReadByte(void) {
     return  val;
 }
 
-static bool InitBus() {
+static bool InitBus(void) {
     bool res;
     owLow();
     owOutput();
