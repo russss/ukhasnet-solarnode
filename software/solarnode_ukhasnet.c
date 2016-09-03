@@ -2,6 +2,7 @@
 #include "ch.h"
 #include "hal.h"
 #include "chprintf.h"
+#include "solarnode_version.h"
 #include "solarnode_ukhasnet.h"
 #include "solarnode_onewire.h"
 #include "solarnode_config.h"
@@ -14,25 +15,32 @@ static THD_WORKING_AREA(transmitWorkingArea, 256);
 
 static void transmitPacket(const char counter, const adc_values_t values) {
     char sendbuf[MAX_MESSAGE];
+    char *buf = (char *)&sendbuf;
     char pos = 0;
     float temp_value;
 
-    pos += chsnprintf(((char *)&sendbuf) + pos, MAX_MESSAGE - pos, "%i%c",
+    pos += chsnprintf(buf + pos, MAX_MESSAGE - pos, "%i%c",
                        node_config.repeat_count, counter);
 
-    if (counter == 'a' && node_config.position[0] != 0) {
-        // First packet, add location
-        pos += chsnprintf(((char *)&sendbuf) + pos, MAX_MESSAGE - pos, "L%s",
+    if (counter == 'b' && node_config.position[0] != 0) {
+        // Send location and version on the 'b' packet, rather than 'a',
+        // so this is transmitted periodically
+        pos += chsnprintf(buf + pos, MAX_MESSAGE - pos, "L%s",
                             node_config.position);
+        pos += chsnprintf(buf + pos, MAX_MESSAGE - pos, ":ukhas.net solarnode v%s rev %s",
+                         SOLARNODE_VERSION, SOLARNODE_GIT_REV);
     } else {
         // Normal packet
-        pos += chsnprintf(((char *)&sendbuf) + pos, MAX_MESSAGE - pos,
+        pos += chsnprintf(buf + pos, MAX_MESSAGE - pos,
                           "T%.1f", values.internal_temp);
         if (oneWireTempReadRetry(&temp_value) == OW_SUCCESS) {
-            pos += chsnprintf(((char *)&sendbuf) + pos, MAX_MESSAGE - pos,
+            pos += chsnprintf(buf + pos, MAX_MESSAGE - pos,
                               ",%.1f", temp_value);
         }
-        pos += chsnprintf(((char *)&sendbuf) + pos, MAX_MESSAGE - pos,
+        // TODO: extract last received RSSI for this field
+        pos += chsnprintf(buf + pos, MAX_MESSAGE - pos,
+                          "R0,%.1f", rfm69_rssi_threshold);
+        pos += chsnprintf(buf + pos, MAX_MESSAGE - pos,
                           "V%.2f,%.2f,%.2fI%.2fZ%iX%i",
                           values.supply_voltage, values.batt_voltage, values.vdda_voltage,
                           values.charge_current,
@@ -41,7 +49,7 @@ static void transmitPacket(const char counter, const adc_values_t values) {
                           );
     }
 
-    chsnprintf(((char *)&sendbuf) + pos, MAX_MESSAGE - pos, "[%s]", node_config.name);
+    chsnprintf(buf + pos, MAX_MESSAGE - pos, "[%s]", node_config.name);
     rfm69Send(sendbuf);
 }
 
