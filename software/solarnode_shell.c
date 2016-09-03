@@ -125,15 +125,23 @@ static void cmd_config(BaseSequentialStream *chp, int argc, char *argv[]) {
             node_config.zombie = (argv[1][0] == '1');
         }
         if (strcmp(argv[0], "output_power") == 0) {
-            // TODO: validate power
-            node_config.output_power = atoi(argv[1]);
+            int8_t pwr = atoi(argv[1]);
+            if (pwr < -18) {
+                chprintf(chp, "Error: Output power must be greater than -18dBm\n");
+            } else if (node_config.rfm69h && pwr > 20) {
+                chprintf(chp, "Error: Output power must be less than 20dBm for the RFM69H[W]\n");
+            } else if (!node_config.rfm69h && pwr > 13) {
+                chprintf(chp, "Error: Output power must be less than 13dBm for the RFM69[W]\n");
+            } else {
+                node_config.output_power = pwr;
+            }
         }
         if (strcmp(argv[0], "rfm69h") == 0) {
             node_config.rfm69h = (argv[1][0] == '1');
         }
         int ret = ConfigSave();
         if (ret != FLASH_OK) {
-            chprintf(chp, "Flash write failed with status: %i\n", ret);
+            chprintf(chp, "Error: Flash write failed with status: %i\n", ret);
         }
     }
     chprintf(chp, "Node Configuration\n");
