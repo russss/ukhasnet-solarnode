@@ -22,14 +22,13 @@ solarnode_config_t node_config;
 
 // Default configuration if there is no user config in flash:
 // This struct is const so gets put in flash rather than RAM
-// TODO: remove testing config and set this to something more sensible
 const solarnode_config_t default_config = {
     CONFIG_MAGIC,
-    "RUSSTEST1",
-    "51.54,-0.09",
+    "",
+    "",
     1,
-    20,
-    40,
+    60,
+    300,
     3900,
     13,
     0,
