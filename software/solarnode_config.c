@@ -26,7 +26,7 @@ const solarnode_config_t default_config = {
     CONFIG_MAGIC,
     "",
     "",
-    1,
+    3,
     60,
     300,
     3900,
