@@ -18,6 +18,11 @@ static thread_t *shelltp = NULL;
 
 static void cmd_version(BaseSequentialStream *chp, int argc, char *argv[]) {
     (void)argv;
+    if (argc > 0) {
+        chprintf(chp, "Usage: version\r\n");
+        return;
+    }
+
     char *id = (char*)UNIQUE_ID_ADDRESS;
     chprintf(chp, "Solarnode Software\n");
     chprintf(chp, "Version:      %s\n", SOLARNODE_VERSION);
@@ -144,6 +149,11 @@ static void cmd_config(BaseSequentialStream *chp, int argc, char *argv[]) {
 
 static void cmd_upgrade(BaseSequentialStream *chp, int argc, char *argv[]) {
     (void)argv;
+    if (argc > 0) {
+        chprintf(chp, "Usage: upgrade\r\n");
+        return;
+    }
+
     chprintf(chp, "Starting bootloader...");
     RTC->BKP0R = 0x42;
     NVIC_SystemReset();
