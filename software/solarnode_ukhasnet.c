@@ -39,7 +39,7 @@ static void transmitPacket(const char counter, const adc_values_t values) {
         }
         // TODO: extract last received RSSI for this field
         pos += chsnprintf(buf + pos, MAX_MESSAGE - pos,
-                          "R0,%.1f", rfm69_rssi_threshold);
+                          "R0,%.1f", -((float)rfm69_rssi_threshold / 2));
         pos += chsnprintf(buf + pos, MAX_MESSAGE - pos,
                           "V%.2f,%.2f,%.2fI%.2fZ%iX%i",
                           values.supply_voltage, values.batt_voltage, values.vdda_voltage,
